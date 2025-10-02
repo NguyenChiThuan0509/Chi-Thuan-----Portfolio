@@ -1,0 +1,117 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 62.5%;
+}
+
+body {
+  font-size: 1.6rem;
+  font-family: "Poppins", sans-serif;
+  /* background-color: #2f5755; */
+  background: linear-gradient(to right, #2c3e50, #000000);
+}
+
+/* Common - Thành phần dùng chung */
+a {
+  text-decoration: none;
+}
+
+.main-content {
+  width: 1170px;
+  max-width: calc(100% -48px);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn {
+  display: inline-block;
+  min-width: 118px;
+  padding: 0 16px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.6rem;
+  text-align: center;
+  line-height: 50px;
+  border-radius: 24.5px;
+  background: #f39c12;
+}
+
+/* ========== HEADER ========== */
+.header {
+  position: fixed;
+  top: -28px;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+
+  /* Màu nền trong suốt mờ mờ */
+  background-color: rgba(3, 0, 20, 0.15); /* màu đen tím với alpha 15% */
+  backdrop-filter: blur(10px); /* hiệu ứng mờ nền phía sau */
+  -webkit-backdrop-filter: blur(10px); /* để hỗ trợ Safari */
+
+  /* Thêm hiệu ứng bóng */
+  box-shadow: 0 2px 10px rgba(42, 14, 97, 0.5);
+}
+
+.header .body {
+  display: flex;
+  justify-content: space-between; /* Logo trái, Nav giữa, Action phải */
+  align-items: center;
+  padding: 36px 0 8px;
+}
+
+.nav ul {
+  display: flex;
+}
+
+.nav a {
+  position: relative;
+  padding: 8px 21px;
+  font-size: 1.6;
+  color: #f2f2f2;
+}
+.nav a:hover,
+.nav li.active a {
+  /* font-weight: 600; */
+  text-shadow: 1px 0 0 currentColor;
+  color: #00bcd4;
+}
+
+.nav li.active a:after {
+  position: absolute;
+  left: 21px;
+  bottom: 6px;
+  content: "";
+  display: block;
+  width: 12px;
+  height: 2px;
+  background: #00bcd4;
+  border-radius: 1px;
+}
+
+.header .sign-up-btn {
+  min-width: 144px;
+}
+
+.header .action {
+  margin-left: 49px;
+}
+/* ========== Content ========== */
+.content {
+  margin-top: 75px;
+}
+
+.content .hero {
+  display: flex;
+  justify-content: space-between;
+}
+
+.content .hero .greet {
+  margin-top: 48px;
+  font-size: 89px;
+  color: #f2f2f2;
+}
+
+/* ========== ?????? ========== */
