@@ -1,8 +1,8 @@
 # 🌐 Personal Portfolio Website
 
-![GitHub last commit](https://img.shields.io/github/last-commit/your-username/portfolio)
-![GitHub repo size](https://img.shields.io/github/repo-size/your-username/portfolio)
-![GitHub stars](https://img.shields.io/github/stars/your-username/portfolio?style=social)
+![GitHub last commit](https://img.shields.io/github/last-commit/NguyenChiThuan0509/Chi-Thuan-----Portfolio)
+![GitHub repo size](https://img.shields.io/github/repo-size/NguyenChiThuan0509/Chi-Thuan-----Portfolio)
+![GitHub stars](https://img.shields.io/github/stars/NguyenChiThuan0509/Chi-Thuan-----Portfolio?style=social)
 
 ## 📌 Giới thiệu
 Đây là dự án **Website Portfolio cá nhân** được xây dựng bằng **HTML** và **CSS** nhằm:
@@ -42,21 +42,17 @@ portfolio/
 ├── assets/
 │   ├── css/
 │   │   └── style.css  # File CSS chính
-│   ├── img/           # Hình ảnh sử dụng
-│   └── fonts/         # Font chữ (nếu có)
+│   │   └── reset.css  # File reset CSS
+│   └── img/           # Hình ảnh sử dụng
 │
 └── README.md          # Tài liệu dự án
 
 
 📖 Cách chạy dự án
 1. Clone repo về máy:
-   git clone https://github.com/your-username/portfolio.git
+   git clone [https://github.com/your-username/portfolio.git](https://github.com/NguyenChiThuan0509/Chi-Thuan-----Portfolio.git)
 2. Mở file index.html trên trình duyệt để xem website.
 
-📸 Demo
-👉 Xem website tại đây
-
 📬 Liên hệ
-
 Email: ncthuan0509@gmail.com
 GitHub: NguyenChiThuan0509
