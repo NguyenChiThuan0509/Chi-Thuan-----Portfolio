@@ -31,16 +31,6 @@ export const projectsData = [
   },
   {
     id: 4,
-    title: "Portfolio",
-    description: "Website portfolio cá nhân",
-    techStack: ["React", "Tailwind", "shadcn/ui", "React Router"],
-    image: "/projects/portfolio_v1.png",
-    demo: "https://chi-thuan-portfolio.vercel.app/",
-    github: "https://github.com/NguyenChiThuan0509/Chi-Thuan-----Portfolio",
-    featured: true,
-  },
-  {
-    id: 5,
     title: "CRUD Users",
     description: "Ứng dụng thêm, sửa, xóa và hiển thị danh sách users",
     techStack: ["React", "TypeScript"],
