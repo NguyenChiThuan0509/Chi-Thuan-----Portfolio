@@ -2,6 +2,7 @@ import { Outlet, useLocation } from "react-router-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
+import AIChat from "@/components/AIChat"
 import { Toaster } from "@/components/ui/sonner"
 
 export default function RootLayout() {
@@ -24,6 +25,7 @@ export default function RootLayout() {
         </AnimatePresence>
       </main>
       <Footer />
+      <AIChat />
       <Toaster position="bottom-right" />
     </div>
   )
