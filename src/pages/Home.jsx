@@ -1,39 +1,57 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
-import { ArrowRight, Download, Github, Linkedin, Mail } from "lucide-react"
+import { ArrowRight, Download, Github, Linkedin, Mail, Loader2 } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { profileData } from "@/data/profile"
 import { skillsData } from "@/data/skills"
 import * as LucideIcons from "lucide-react"
 import { supabase } from "@/lib/supabase"
 
 export default function Home() {
   const [projects, setProjects] = useState([])
+  const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function fetchProjects() {
-      const { data, error } = await supabase
+    async function fetchData() {
+      // Fetch projects
+      const { data: projectsData } = await supabase
         .from('projects')
         .select('*')
         .eq('featured', true)
         .limit(3)
       
-      if (!error) {
-        setProjects(data)
-      }
+      if (projectsData) setProjects(projectsData)
+
+      // Fetch profile (try to get the first one or the default one)
+      const { data: profileData } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .single()
+      
+      if (profileData) setProfile(profileData)
+      
       setLoading(false)
     }
-    fetchProjects()
+    fetchData()
   }, [])
 
-  return (
-    <div className="container py-12 md:py-24 space-y-32">
+  if (loading || !profile) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    )
+  }
 
-      <section className="flex flex-col-reverse items-center justify-between gap-12 md:flex-row py-8">
+  return (
+    <div className="container pt-8 md:pt-12 space-y-12">
+
+      <section className="flex flex-col-reverse items-center justify-between gap-12 md:flex-row py-4">
         <div className="flex-1 space-y-6 text-center md:text-left">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -41,10 +59,10 @@ export default function Home() {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-lg font-medium text-primary md:text-xl">Xin chào, tôi là</h2>
-            <h1 className="mt-2 text-4xl font-bold tracking-tight sm:text-6xl">{profileData.name}</h1>
-            <p className="mt-4 text-xl font-semibold text-muted-foreground">{profileData.title}</p>
+            <h1 className="mt-2 text-4xl font-bold tracking-tight sm:text-6xl">{profile.name}</h1>
+            <p className="mt-4 text-xl font-semibold text-muted-foreground">{profile.title}</p>
             <p className="mt-6 max-w-2xl text-lg text-muted-foreground">
-              {profileData.bio}
+              {profile.bio}
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4 md:justify-start">
               <Button asChild size="lg" className="rounded-full">
@@ -65,8 +83,8 @@ export default function Home() {
           className="relative h-64 w-64 overflow-hidden rounded-full border-4 border-primary/20 md:h-80 md:w-80"
         >
           <img
-            src={profileData.avatar}
-            alt={profileData.name}
+            src={profile.avatar_url || "/anh_dai_dien.png"}
+            alt={profile.name}
             className="h-full w-full object-cover"
           />
         </motion.div>
@@ -166,7 +184,7 @@ export default function Home() {
             <Link to="/contact">Liên hệ ngay</Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="rounded-full bg-transparent text-primary-foreground border-primary-foreground hover:bg-white hover:text-primary">
-            <a href={profileData.cvUrl} download>
+            <a href={profile.cv_url} download>
               <Download className="mr-2 h-4 w-4" /> Tải CV
             </a>
           </Button>

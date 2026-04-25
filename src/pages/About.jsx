@@ -32,8 +32,8 @@ const timeline = [
 
 export default function About() {
   return (
-    <div className="container py-16">
-      <div className="grid gap-16 lg:grid-cols-2">
+    <div className="container pt-0">
+      <div className="grid gap-8 lg:grid-cols-2">
 
         <motion.div
           initial={{ opacity: 0, x: -20 }}
