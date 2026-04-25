@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { ArrowRight, Download, Github, Linkedin, Mail } from "lucide-react"
 import { Link } from "react-router-dom"
@@ -6,11 +7,28 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { profileData } from "@/data/profile"
 import { skillsData } from "@/data/skills"
-import { projectsData } from "@/data/projects"
 import * as LucideIcons from "lucide-react"
+import { supabase } from "@/lib/supabase"
 
 export default function Home() {
-  const featuredProjects = projectsData.filter(p => p.featured).slice(0, 3)
+  const [projects, setProjects] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchProjects() {
+      const { data, error } = await supabase
+        .from('projects')
+        .select('*')
+        .eq('featured', true)
+        .limit(3)
+      
+      if (!error) {
+        setProjects(data)
+      }
+      setLoading(false)
+    }
+    fetchProjects()
+  }, [])
 
   return (
     <div className="container py-12 md:py-24 space-y-32">
@@ -90,44 +108,50 @@ export default function Home() {
           </Button>
         </div>
         <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {featuredProjects.map((project) => (
-            <motion.div key={project.id} whileHover={{ y: -10 }} transition={{ duration: 0.3 }}>
-              <Card className="overflow-hidden shadow-lg">
-                <div className="aspect-video overflow-hidden">
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
-                  />
-                </div>
-                <CardContent className="p-6">
-                  <h3 className="text-xl font-bold">{project.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-                    {project.description}
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-2">
-                    {project.techStack.map((tech) => (
-                      <Badge key={tech} variant="secondary">
-                        {tech}
-                      </Badge>
-                    ))}
+          {loading ? (
+            <div className="col-span-full flex justify-center py-20">
+              <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+            </div>
+          ) : (
+            projects.map((project) => (
+              <motion.div key={project.id} whileHover={{ y: -10 }} transition={{ duration: 0.3 }}>
+                <Card className="overflow-hidden shadow-lg">
+                  <div className="aspect-video overflow-hidden">
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
+                    />
                   </div>
-                  <div className="mt-6 flex space-x-4">
-                    <Button asChild size="sm" className="flex-1">
-                      <a href={project.demo} target="_blank" rel="noopener noreferrer">
-                        Demo
-                      </a>
-                    </Button>
-                    <Button asChild variant="outline" size="sm" className="flex-1">
-                      <a href={project.github} target="_blank" rel="noopener noreferrer">
-                        GitHub
-                      </a>
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold">{project.title}</h3>
+                    <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                      {project.description}
+                    </p>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      {project.tech_stack?.map((tech) => (
+                        <Badge key={tech} variant="secondary">
+                          {tech}
+                        </Badge>
+                      ))}
+                    </div>
+                    <div className="mt-6 flex space-x-4">
+                      <Button asChild size="sm" className="flex-1">
+                        <a href={project.demo} target="_blank" rel="noopener noreferrer">
+                          Demo
+                        </a>
+                      </Button>
+                      <Button asChild variant="outline" size="sm" className="flex-1">
+                        <a href={project.github} target="_blank" rel="noopener noreferrer">
+                          GitHub
+                        </a>
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))
+          )}
         </div>
       </section>
 
