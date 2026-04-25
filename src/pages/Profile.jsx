@@ -133,7 +133,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="container max-w-4xl pt-4 pb-10">
+    <div className="container max-w-4xl pt-8 md:pt-12 pb-10">
       <form onSubmit={handleSave}>
         <div className="grid gap-6 md:grid-cols-3">
           <Card className="md:col-span-1">
@@ -181,36 +181,65 @@ export default function Profile() {
                 <CardTitle className="text-lg">Thông tin cơ bản</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-3 p-4 pt-0">
-                <div className="grid gap-1.5">
-                  <Label htmlFor="name" className="text-xs">Họ và tên</Label>
+                <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Họ và tên (VI)</Label>
                   <Input
                     id="name"
                     value={profile.name}
                     onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                    className="h-9"
                     required
                   />
                 </div>
-                <div className="grid gap-1.5">
-                  <Label htmlFor="title" className="text-xs">Chức danh</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="name_en">Full Name (EN)</Label>
+                  <Input
+                    id="name_en"
+                    value={profile.name_en || ""}
+                    onChange={(e) => setProfile({ ...profile, name_en: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Chức danh (VI)</Label>
                   <Input
                     id="title"
                     value={profile.title}
                     onChange={(e) => setProfile({ ...profile, title: e.target.value })}
-                    className="h-9"
                     required
                   />
                 </div>
-                <div className="grid gap-1.5">
-                  <Label htmlFor="bio" className="text-xs">Giới thiệu ngắn</Label>
-                  <Textarea
-                    id="bio"
-                    rows={3}
-                    value={profile.bio}
-                    onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-                    className="resize-none"
+                <div className="space-y-2">
+                  <Label htmlFor="title_en">Professional Title (EN)</Label>
+                  <Input
+                    id="title_en"
+                    value={profile.title_en || ""}
+                    onChange={(e) => setProfile({ ...profile, title_en: e.target.value })}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="bio">Tiểu sử ngắn (VI)</Label>
+                <Textarea
+                  id="bio"
+                  value={profile.bio}
+                  onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                  rows={4}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="bio_en">Short Bio (EN)</Label>
+                <Textarea
+                  id="bio_en"
+                  value={profile.bio_en || ""}
+                  onChange={(e) => setProfile({ ...profile, bio_en: e.target.value })}
+                  rows={4}
+                />
+              </div>
               </CardContent>
             </Card>
 

@@ -130,15 +130,6 @@ export default function Contact() {
             </div>
           </div>
 
-          <Card className="bg-primary text-primary-foreground">
-            <CardContent className="p-8">
-              <h3 className="text-xl font-bold mb-4">Sẵn sàng hợp tác</h3>
-              <p className="opacity-90">
-                Tôi đang tìm kiếm các cơ hội làm việc Remote hoặc tại văn phòng.
-                Đừng ngần ngại liên hệ nếu bạn thấy tôi phù hợp với dự án của mình!
-              </p>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>

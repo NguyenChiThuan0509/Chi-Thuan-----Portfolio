@@ -32,7 +32,7 @@ const timeline = [
 
 export default function About() {
   return (
-    <div className="container pt-0">
+    <div className="container pt-8 md:pt-12">
       <div className="grid gap-8 lg:grid-cols-2">
 
         <motion.div
