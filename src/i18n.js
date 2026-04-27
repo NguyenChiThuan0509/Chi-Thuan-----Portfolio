@@ -14,6 +14,7 @@ const resources = {
         "now": "Hiện tại",
         "feed": "Bản tin",
         "notes": "Ghi chú",
+        "attendance": "Điểm danh",
 
         "login": "Đăng nhập",
         "profile": "Hồ sơ cá nhân",
@@ -39,6 +40,7 @@ const resources = {
         "now": "Now",
         "feed": "Feed",
         "notes": "Notes",
+        "attendance": "Attendance",
 
         "login": "Login",
         "profile": "Profile",

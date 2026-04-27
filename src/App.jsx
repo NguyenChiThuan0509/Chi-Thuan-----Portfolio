@@ -15,6 +15,7 @@ import ProjectEditor from "@/pages/ProjectEditor"
 import Now from "@/pages/Now"
 import Feed from "@/pages/Feed"
 import Notes from "@/pages/Notes"
+import Attendance from "@/pages/Attendance"
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
             <Route path="/now" element={<Now />} />
             <Route path="/feed" element={<Feed />} />
             <Route path="/notes" element={<Notes />} />
+            <Route path="/attendance" element={<Attendance />} />
 
             <Route path="/contact" element={<Contact />} />
             <Route path="/snippets" element={<Snippets />} />

@@ -34,6 +34,7 @@ export default function Navbar() {
     { name: t("nav.now"), href: "/now" },
     { name: t("nav.feed"), href: "/feed" },
     { name: t("nav.notes"), href: "/notes" },
+    { name: t("nav.attendance"), href: "/attendance" },
     { name: t("nav.contact"), href: "/contact" },
   ]
 
