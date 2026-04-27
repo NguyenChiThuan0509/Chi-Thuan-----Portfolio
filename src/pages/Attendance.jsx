@@ -8,7 +8,6 @@ import {
   LogIn, 
   LogOut, 
   Clock, 
-  Calendar, 
   CheckCircle2, 
   History,
   AlertCircle
@@ -171,7 +170,7 @@ export default function Attendance() {
       >
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-4xl font-bold tracking-tight">
+            <h1 className="text-4xl font-bold tracking-tight neon-text">
               {i18n.language === 'vi' ? "Điểm danh" : "Attendance"}
             </h1>
             <p className="text-muted-foreground">
@@ -187,10 +186,8 @@ export default function Attendance() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Card className="md:col-span-2 relative overflow-hidden border-primary/10 bg-background/50 backdrop-blur-md">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <Calendar className="h-24 w-24" />
-            </div>
+          <Card className="md:col-span-2 relative overflow-hidden glass-card">
+
             <CardHeader>
               <CardTitle className="text-xl">
                 {i18n.language === 'vi' ? "Hôm nay" : "Today"}
@@ -231,7 +228,7 @@ export default function Attendance() {
                 {!todayRecord ? (
                   <Button 
                     size="lg" 
-                    className="flex-1 gap-2 h-14 text-lg shadow-lg shadow-primary/20"
+                    className="flex-1 gap-2 h-14 text-lg btn-neon"
                     onClick={handleCheckIn}
                     disabled={actionLoading}
                   >
@@ -242,7 +239,7 @@ export default function Attendance() {
                   <Button 
                     size="lg" 
                     variant="outline"
-                    className="flex-1 gap-2 h-14 text-lg border-primary/20 hover:bg-primary/5"
+                    className="flex-1 gap-2 h-14 text-lg border-primary/20 hover:bg-primary/5 neon-border"
                     onClick={handleCheckOut}
                     disabled={actionLoading}
                   >
@@ -259,7 +256,9 @@ export default function Attendance() {
             </CardContent>
           </Card>
 
-          <Card className="border-primary/10 bg-background/50 backdrop-blur-md">
+          <Card className="glass-card">
+
+
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <History className="h-5 w-5 text-primary" />

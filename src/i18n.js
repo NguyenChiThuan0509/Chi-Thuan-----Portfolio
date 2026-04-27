@@ -15,6 +15,7 @@ const resources = {
         "feed": "Bản tin",
         "notes": "Ghi chú",
         "attendance": "Điểm danh",
+        "guestbook": "Lưu bút",
 
         "login": "Đăng nhập",
         "profile": "Hồ sơ cá nhân",
@@ -41,6 +42,7 @@ const resources = {
         "feed": "Feed",
         "notes": "Notes",
         "attendance": "Attendance",
+        "guestbook": "Guestbook",
 
         "login": "Login",
         "profile": "Profile",

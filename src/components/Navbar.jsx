@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
-import { Menu, X, Code2, LogIn, LogOut, User, Sparkles, Languages } from "lucide-react"
+import { Menu, X, Code2, LogIn, LogOut, User, Sparkles, Languages, ChevronDown, MoreHorizontal } from "lucide-react"
+import * as LucideIcons from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "./ThemeToggle"
 import { cn } from "@/lib/utils"
@@ -26,16 +27,20 @@ export default function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
 
-  const navItems = [
+  const primaryNav = [
     { name: t("nav.home"), href: "/" },
     { name: t("nav.about"), href: "/about" },
     { name: t("nav.projects"), href: "/projects" },
     { name: t("nav.snippets"), href: "/snippets" },
-    { name: t("nav.now"), href: "/now" },
-    { name: t("nav.feed"), href: "/feed" },
-    { name: t("nav.notes"), href: "/notes" },
-    { name: t("nav.attendance"), href: "/attendance" },
     { name: t("nav.contact"), href: "/contact" },
+  ]
+
+  const secondaryNav = [
+    { name: t("nav.now"), href: "/now", icon: LucideIcons.Clock },
+    { name: t("nav.feed"), href: "/feed", icon: LucideIcons.Rss },
+    { name: t("nav.notes"), href: "/notes", icon: LucideIcons.FileText },
+    { name: t("nav.attendance"), href: "/attendance", icon: LucideIcons.CalendarCheck },
+    { name: t("nav.guestbook"), href: "/guestbook", icon: LucideIcons.MessageSquare },
   ]
 
   useEffect(() => {
@@ -90,7 +95,7 @@ export default function Navbar() {
         {/* Desktop Navigation */}
         <div className="hidden md:flex md:items-center md:gap-1">
           <nav className="flex items-center space-x-1 mr-4" onMouseLeave={() => setHoveredPath(null)}>
-            {navItems.map((item) => {
+            {primaryNav.map((item) => {
               const isActive = location.pathname === item.href
               return (
                 <Link
@@ -120,6 +125,57 @@ export default function Navbar() {
                 </Link>
               )
             })}
+
+            {/* More Dropdown */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  onMouseEnter={() => setHoveredPath("more")}
+                  className={cn(
+                    "relative flex items-center gap-1 px-4 py-1.5 text-sm font-medium transition-colors duration-300 outline-none",
+                    secondaryNav.some(item => location.pathname === item.href) 
+                      ? "text-primary" 
+                      : "text-muted-foreground hover:text-primary"
+                  )}
+                >
+                  <span className="relative z-10">{i18n.language === 'vi' ? 'Thêm' : 'More'}</span>
+                  <ChevronDown className="h-4 w-4 relative z-10" />
+                  {secondaryNav.some(item => location.pathname === item.href) && (
+                    <motion.div
+                      layoutId="nav-active"
+                      className="absolute inset-0 bg-primary/5 rounded-full z-0"
+                      transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                    />
+                  )}
+                  {hoveredPath === "more" && !secondaryNav.some(item => location.pathname === item.href) && (
+                    <motion.div
+                      layoutId="nav-hover"
+                      className="absolute inset-0 bg-muted/50 rounded-full z-0"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                    />
+                  )}
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48 glass-card border-primary/10">
+                {secondaryNav.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <DropdownMenuItem key={item.href} asChild>
+                      <Link 
+                        to={item.href} 
+                        className={cn(
+                          "flex items-center gap-2 cursor-pointer w-full",
+                          location.pathname === item.href ? "text-primary bg-primary/5" : ""
+                        )}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span>{item.name}</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  )
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
           
           <div className="flex items-center space-x-2 pl-4 border-l">
@@ -202,7 +258,7 @@ export default function Navbar() {
             className="border-t bg-background md:hidden overflow-hidden"
           >
             <div className="container py-4 space-y-1">
-              {navItems.map((item) => (
+              {[...primaryNav, ...secondaryNav].map((item) => (
                 <Link
                   key={item.href}
                   to={item.href}
@@ -214,6 +270,7 @@ export default function Navbar() {
                       : "text-muted-foreground hover:bg-muted hover:text-primary"
                   )}
                 >
+                  {item.icon && <item.icon className="mr-3 h-4 w-4" />}
                   {item.name}
                 </Link>
               ))}
