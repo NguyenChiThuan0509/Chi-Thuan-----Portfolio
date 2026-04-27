@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import AIChat from "@/components/AIChat"
+import QuickActionFAB from "@/components/QuickActionFAB"
 import { Toaster } from "@/components/ui/sonner"
 
 export default function RootLayout() {
@@ -26,7 +27,9 @@ export default function RootLayout() {
       </main>
       <Footer />
       <AIChat />
+      <QuickActionFAB />
       <Toaster position="bottom-right" />
+
     </div>
   )
 }

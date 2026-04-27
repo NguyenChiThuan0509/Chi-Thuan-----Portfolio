@@ -32,6 +32,8 @@ export default function Navbar() {
     { name: t("nav.projects"), href: "/projects" },
     { name: t("nav.snippets"), href: "/snippets" },
     { name: t("nav.now"), href: "/now" },
+    { name: t("nav.feed"), href: "/feed" },
+    { name: t("nav.notes"), href: "/notes" },
     { name: t("nav.contact"), href: "/contact" },
   ]
 
@@ -51,10 +53,11 @@ export default function Navbar() {
   }, [])
 
   async function fetchProfile() {
+    if (!user?.id) return
     const { data } = await supabase
       .from('profiles')
       .select('name, avatar_url')
-      .limit(1)
+      .eq('id', user.id)
       .single()
     if (data) setProfile(data)
   }

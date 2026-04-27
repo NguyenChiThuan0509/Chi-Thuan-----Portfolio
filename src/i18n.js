@@ -12,6 +12,9 @@ const resources = {
         "snippets": "Góc chia sẻ",
         "contact": "Liên hệ",
         "now": "Hiện tại",
+        "feed": "Bản tin",
+        "notes": "Ghi chú",
+
         "login": "Đăng nhập",
         "profile": "Hồ sơ cá nhân",
         "logout": "Đăng xuất"
@@ -34,6 +37,9 @@ const resources = {
         "snippets": "Snippets",
         "contact": "Contact",
         "now": "Now",
+        "feed": "Feed",
+        "notes": "Notes",
+
         "login": "Login",
         "profile": "Profile",
         "logout": "Logout"

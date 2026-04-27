@@ -13,6 +13,9 @@ import SnippetEditor from "@/pages/SnippetEditor"
 import ProjectDetail from "@/pages/ProjectDetail"
 import ProjectEditor from "@/pages/ProjectEditor"
 import Now from "@/pages/Now"
+import Feed from "@/pages/Feed"
+import Notes from "@/pages/Notes"
+
 
 function App() {
   return (
@@ -27,6 +30,9 @@ function App() {
             <Route path="projects/new" element={<ProjectEditor />} />
             <Route path="projects/:id/edit" element={<ProjectEditor />} />
             <Route path="/now" element={<Now />} />
+            <Route path="/feed" element={<Feed />} />
+            <Route path="/notes" element={<Notes />} />
+
             <Route path="/contact" element={<Contact />} />
             <Route path="/snippets" element={<Snippets />} />
             <Route path="/snippets/:id" element={<SnippetDetail />} />
