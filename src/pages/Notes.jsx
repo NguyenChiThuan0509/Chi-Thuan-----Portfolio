@@ -36,10 +36,11 @@ export default function Notes() {
   const [notes, setNotes] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState("")
-  const [isAdding, setIsAdding] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false)
   const [user, setUser] = useState(null)
   
-  // New Note State
+  // Note State
+  const [editingNote, setEditingNote] = useState(null)
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [color, setColor] = useState("default")
@@ -72,35 +73,70 @@ export default function Notes() {
     }
   }
 
-  async function handleAddNote() {
+  async function handleSaveNote() {
     if (!title.trim() && !content.trim()) {
-      setIsAdding(false)
+      setIsExpanded(false)
+      setEditingNote(null)
       return
     }
 
     try {
-      const { data, error } = await supabase.from("notes").insert([
-        {
-          title,
-          content,
-          color,
-          is_pinned: isPinned,
-          user_id: user.id
-        }
-      ]).select()
+      if (editingNote) {
+        // Update existing note
+        const { data, error } = await supabase
+          .from("notes")
+          .update({
+            title,
+            content,
+            color,
+            is_pinned: isPinned,
+          })
+          .eq("id", editingNote.id)
+          .select()
 
-      if (error) throw error
+        if (error) throw error
+        setNotes(notes.map(n => n.id === editingNote.id ? data[0] : n))
+        toast.success("Đã cập nhật ghi chú")
+      } else {
+        // Create new note
+        const { data, error } = await supabase.from("notes").insert([
+          {
+            title,
+            content,
+            color,
+            is_pinned: isPinned,
+            user_id: user.id
+          }
+        ]).select()
+
+        if (error) throw error
+        setNotes([data[0], ...notes])
+        toast.success("Đã thêm ghi chú")
+      }
       
-      setNotes([data[0], ...notes])
-      setTitle("")
-      setContent("")
-      setColor("default")
-      setIsPinned(false)
-      setIsAdding(false)
-      toast.success("Đã thêm ghi chú")
+      resetForm()
     } catch (error) {
-      toast.error("Lỗi khi thêm ghi chú")
+      toast.error(editingNote ? "Lỗi khi cập nhật ghi chú" : "Lỗi khi thêm ghi chú")
     }
+  }
+
+  function resetForm() {
+    setTitle("")
+    setContent("")
+    setColor("default")
+    setIsPinned(false)
+    setIsExpanded(false)
+    setEditingNote(null)
+  }
+
+  function handleEditClick(note) {
+    setEditingNote(note)
+    setTitle(note.title || "")
+    setContent(note.content || "")
+    setColor(note.color || "default")
+    setIsPinned(note.is_pinned || false)
+    setIsExpanded(true)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   async function handleDeleteNote(id) {
@@ -164,11 +200,11 @@ export default function Notes() {
           </p>
         </motion.div>
 
-        <div className="relative w-full md:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <div className="relative w-full md:w-80 group">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-amber-500 transition-colors" />
           <Input 
             placeholder={i18n.language === 'vi' ? "Tìm kiếm ghi chú..." : "Search notes..."}
-            className="pl-10 bg-background/50 border-none ring-1 ring-white/10 focus-visible:ring-amber-500/50"
+            className="pl-10 bg-card border-border/50 shadow-sm focus-visible:ring-amber-500/50 focus-visible:border-amber-500/50 transition-all duration-300 w-full"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -180,16 +216,27 @@ export default function Notes() {
         <motion.div 
           layout
           className={cn(
-            "w-full max-w-xl transition-all duration-300 rounded-2xl shadow-2xl ring-1 ring-white/10 bg-background/40 backdrop-blur-xl overflow-hidden",
-            isAdding ? "p-4" : "p-2"
+            "w-full max-w-xl transition-all duration-500 rounded-xl shadow-lg border border-border/50 overflow-hidden",
+            isExpanded ? "p-4" : "p-2",
+            isExpanded ? (NOTE_COLORS.find(c => c.id === color)?.bg || "bg-card") : "bg-card"
           )}
         >
-          {isAdding ? (
-            <div className="space-y-4">
+          {!isExpanded ? (
+            <div 
+              className="flex items-center gap-3 px-3 py-1.5 cursor-pointer group"
+              onClick={() => setIsExpanded(true)}
+            >
+              <div className="h-8 w-8 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 group-hover:bg-amber-500/20 transition-colors">
+                <Plus className="h-5 w-5" />
+              </div>
+              <span className="text-muted-foreground text-sm">{i18n.language === 'vi' ? "Ghi chú nhanh..." : "Quick note..."}</span>
+            </div>
+          ) : (
+            <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
               <div className="flex items-center justify-between gap-2">
                 <Input 
                   placeholder={i18n.language === 'vi' ? "Tiêu đề" : "Title"}
-                  className="border-none bg-transparent text-lg font-bold p-0 focus-visible:ring-0"
+                  className="border-none bg-transparent text-lg font-bold p-0 focus-visible:ring-0 px-1"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   autoFocus
@@ -205,18 +252,18 @@ export default function Notes() {
               </div>
               <Textarea 
                 placeholder={i18n.language === 'vi' ? "Viết ghi chú..." : "Take a note..."}
-                className="border-none bg-transparent min-h-[100px] p-0 focus-visible:ring-0 resize-none text-base"
+                className="border-none bg-transparent min-h-[120px] px-1 py-2 focus-visible:ring-0 resize-none text-base"
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
               />
-              <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                <div className="flex gap-1">
+              <div className="flex items-center justify-between pt-2 border-t border-border/50">
+                <div className="flex gap-1.5">
                   {NOTE_COLORS.map((c) => (
                     <button
                       key={c.id}
                       onClick={() => setColor(c.id)}
                       className={cn(
-                        "h-6 w-6 rounded-full border border-white/10 flex items-center justify-center transition-all",
+                        "h-6 w-6 rounded-full border border-border/50 flex items-center justify-center transition-all",
                         c.bg,
                         color === c.id ? "ring-2 ring-primary scale-110" : "hover:scale-105"
                       )}
@@ -226,22 +273,14 @@ export default function Notes() {
                   ))}
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" onClick={() => setIsAdding(false)}>
-                    {i18n.language === 'vi' ? "Đóng" : "Close"}
+                  <Button variant="ghost" size="sm" onClick={resetForm}>
+                    {i18n.language === 'vi' ? "Hủy" : "Cancel"}
                   </Button>
-                  <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white" onClick={handleAddNote}>
+                  <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-white rounded-md px-6" onClick={handleSaveNote}>
                     {i18n.language === 'vi' ? "Lưu" : "Save"}
                   </Button>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div 
-              className="px-4 py-2 text-muted-foreground flex items-center justify-between cursor-text"
-              onClick={() => setIsAdding(true)}
-            >
-              <span>{i18n.language === 'vi' ? "Ghi chú nhanh..." : "Quick note..."}</span>
-              <Plus className="h-5 w-5" />
             </div>
           )}
         </motion.div>
@@ -259,23 +298,39 @@ export default function Notes() {
           <div className="space-y-12">
             {pinnedNotes.length > 0 && (
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4 px-2">Đã ghim</h3>
+                <h3 className="text-xs font-bold tracking-widest text-muted-foreground mb-4 px-2">Đã ghim</h3>
                 <motion.div 
                   layout
                   className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
                 >
-                  {pinnedNotes.map(note => <NoteCard key={note.id} note={note} onDelete={handleDeleteNote} onTogglePin={togglePin} />)}
+                  {pinnedNotes.map(note => (
+                    <NoteCard 
+                      key={note.id} 
+                      note={note} 
+                      onDelete={handleDeleteNote} 
+                      onTogglePin={togglePin} 
+                      onEdit={() => handleEditClick(note)}
+                    />
+                  ))}
                 </motion.div>
               </div>
             )}
 
             <div>
-              {pinnedNotes.length > 0 && <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4 px-2">Khác</h3>}
+              {pinnedNotes.length > 0 && <h3 className="text-xs font-bold tracking-widest text-muted-foreground mb-4 px-2">Khác</h3>}
               <motion.div 
                 layout
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
               >
-                {otherNotes.map(note => <NoteCard key={note.id} note={note} onDelete={handleDeleteNote} onTogglePin={togglePin} />)}
+                {otherNotes.map(note => (
+                  <NoteCard 
+                    key={note.id} 
+                    note={note} 
+                    onDelete={handleDeleteNote} 
+                    onTogglePin={togglePin} 
+                    onEdit={() => handleEditClick(note)}
+                  />
+                ))}
               </motion.div>
             </div>
 
@@ -291,7 +346,7 @@ export default function Notes() {
   )
 }
 
-function NoteCard({ note, onDelete, onTogglePin }) {
+function NoteCard({ note, onDelete, onTogglePin, onEdit }) {
   const colorData = NOTE_COLORS.find(c => c.id === note.color) || NOTE_COLORS[0]
   
   return (
@@ -302,6 +357,7 @@ function NoteCard({ note, onDelete, onTogglePin }) {
       exit={{ opacity: 0, scale: 0.9 }}
       whileHover={{ y: -5 }}
       className="group"
+      onClick={onEdit}
     >
       <Card className={cn(
         "h-full border-none ring-1 ring-white/10 shadow-lg backdrop-blur-sm transition-all duration-300",
@@ -315,7 +371,10 @@ function NoteCard({ note, onDelete, onTogglePin }) {
               variant="ghost" 
               size="icon" 
               className={cn("h-7 w-7 rounded-full", note.is_pinned && "text-amber-500 opacity-100")}
-              onClick={() => onTogglePin(note)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTogglePin(note);
+              }}
             >
               <Pin className="h-3 w-3" />
             </Button>
@@ -336,10 +395,26 @@ function NoteCard({ note, onDelete, onTogglePin }) {
           )}
         </CardContent>
         <CardFooter className="p-2 pt-0 flex justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          <Button variant="ghost" size="icon" className="h-8 w-8 hover:text-destructive" onClick={() => onDelete(note.id)}>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8 hover:text-destructive" 
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(note.id);
+            }}
+          >
             <Trash2 className="h-4 w-4" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="h-8 w-8"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }}
+          >
             <MoreVertical className="h-4 w-4" />
           </Button>
         </CardFooter>

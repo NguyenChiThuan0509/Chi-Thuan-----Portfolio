@@ -11,7 +11,7 @@ const resources = {
         "projects": "Dự án",
         "snippets": "Góc chia sẻ",
         "contact": "Liên hệ",
-        "now": "Hiện tại",
+
         "feed": "Bản tin",
         "notes": "Ghi chú",
         "attendance": "Điểm danh",
@@ -38,7 +38,7 @@ const resources = {
         "projects": "Projects",
         "snippets": "Snippets",
         "contact": "Contact",
-        "now": "Now",
+
         "feed": "Feed",
         "notes": "Notes",
         "attendance": "Attendance",

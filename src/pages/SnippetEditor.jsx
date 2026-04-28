@@ -154,7 +154,7 @@ export default function SnippetEditor() {
                 id="title"
                 value={snippet.title}
                 onChange={(e) => setSnippet({ ...snippet, title: e.target.value })}
-                placeholder="Ví dụ: Cách tối ưu React Performance..."
+                className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                 required
               />
             </div>
@@ -184,6 +184,7 @@ export default function SnippetEditor() {
                     value={snippet.image_url}
                     onChange={(e) => setSnippet({ ...snippet, image_url: e.target.value })}
                     placeholder="URL ảnh hoặc upload..."
+                    className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   />
                   <input type="file" id="file-upload" className="hidden" accept="image/*" onChange={handleFileUpload} />
                   <Button type="button" variant="outline" size="icon" onClick={() => document.getElementById('file-upload').click()}>
@@ -200,6 +201,7 @@ export default function SnippetEditor() {
                 value={snippet.description}
                 onChange={(e) => setSnippet({ ...snippet, description: e.target.value })}
                 placeholder="Mô tả tóm tắt về nội dung này..."
+                className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                 rows={2}
               />
             </div>
@@ -213,7 +215,7 @@ export default function SnippetEditor() {
                 value={snippet.code_snippet}
                 onChange={(e) => setSnippet({ ...snippet, code_snippet: e.target.value })}
                 placeholder="Dán đoạn code vào đây..."
-                className="font-mono text-sm"
+                className="font-mono text-sm bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                 rows={6}
               />
             </div>
@@ -227,6 +229,7 @@ export default function SnippetEditor() {
                 value={snippet.content}
                 onChange={(e) => setSnippet({ ...snippet, content: e.target.value })}
                 placeholder="Viết nội dung bài viết ở đây..."
+                className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                 rows={10}
               />
             </div>

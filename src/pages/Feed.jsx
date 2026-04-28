@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Textarea } from "@/components/ui/textarea"
-import { Image as ImageIcon, Heart, MessageCircle, Share2, Send, Trash2, X, Loader2 } from "lucide-react"
+import { Image as ImageIcon, Heart, MessageCircle, Share2, Send, Trash2, X, Loader2, Globe, MoreHorizontal, ThumbsUp, Video, Film } from "lucide-react"
 import { toast } from "sonner"
 import { formatDistanceToNow } from "date-fns"
 import { vi, enUS } from "date-fns/locale"
@@ -22,6 +22,10 @@ export default function Feed() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [selectedImages, setSelectedImages] = useState([])
   const [uploadingImages, setUploadingImages] = useState(false)
+  const [userLikes, setUserLikes] = useState(new Set())
+  const [activeCommentPost, setActiveCommentPost] = useState(null)
+  const [commentText, setCommentText] = useState("")
+  const [isExpanded, setIsExpanded] = useState(false)
   const fileInputRef = useRef(null)
 
   const dateLocale = i18n.language === 'vi' ? vi : enUS
@@ -63,6 +67,96 @@ export default function Feed() {
     } finally {
       setLoading(false)
     }
+  }
+
+  useEffect(() => {
+    if (user && posts.length > 0) {
+      fetchUserLikes()
+    }
+  }, [user, posts])
+
+  async function fetchUserLikes() {
+    const { data } = await supabase
+      .from('post_likes')
+      .select('post_id')
+      .eq('user_id', user.id)
+    
+    if (data) {
+      setUserLikes(new Set(data.map(l => l.post_id)))
+    }
+  }
+
+  async function handleLike(postId) {
+    if (!user) {
+      toast.error("Bạn cần đăng nhập để tương tác")
+      return
+    }
+
+    const isLiked = userLikes.has(postId)
+    
+    try {
+      if (isLiked) {
+        await supabase
+          .from('post_likes')
+          .delete()
+          .eq('post_id', postId)
+          .eq('user_id', user.id)
+        
+        const newLikes = new Set(userLikes)
+        newLikes.delete(postId)
+        setUserLikes(newLikes)
+        
+        // Optimistic update
+        setPosts(posts.map(p => p.id === postId ? { ...p, likes_count: (p.likes_count || 1) - 1 } : p))
+      } else {
+        await supabase
+          .from('post_likes')
+          .insert({ post_id: postId, user_id: user.id })
+        
+        const newLikes = new Set(userLikes)
+        newLikes.add(postId)
+        setUserLikes(newLikes)
+        
+        // Optimistic update
+        setPosts(posts.map(p => p.id === postId ? { ...p, likes_count: (p.likes_count || 0) + 1 } : p))
+      }
+    } catch (error) {
+      toast.error("Có lỗi xảy ra")
+    }
+  }
+
+  async function handleComment(postId) {
+    if (!user) {
+      toast.error("Bạn cần đăng nhập để bình luận")
+      return
+    }
+
+    if (!commentText.trim()) return
+
+    try {
+      const { error } = await supabase
+        .from('post_comments')
+        .insert({
+          post_id: postId,
+          user_id: user.id,
+          content: commentText
+        })
+      
+      if (error) throw error
+      
+      setCommentText("")
+      setActiveCommentPost(null)
+      toast.success("Đã gửi bình luận")
+      // In a real app, we'd fetch or update the comment list here
+    } catch (error) {
+      toast.error("Không thể gửi bình luận")
+    }
+  }
+
+  const handleShare = (post) => {
+    const url = `${window.location.origin}/feed?post=${post.id}`
+    navigator.clipboard.writeText(url)
+    toast.success("Đã sao chép liên kết vào bộ nhớ tạm!")
   }
 
   const handleImageSelect = (e) => {
@@ -147,6 +241,7 @@ export default function Feed() {
     } finally {
       setIsSubmitting(false)
       setUploadingImages(false)
+      setIsExpanded(false)
     }
   }
 
@@ -162,87 +257,109 @@ export default function Feed() {
   }
 
   return (
-    <div className="container max-w-2xl py-12 px-4">
+    <div className="container max-w-xl py-6 px-4">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <h1 className="text-3xl font-bold tracking-tight mb-2 bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
+        <h1 className="text-2xl font-bold tracking-tight mb-1 text-primary">
           {t("nav.feed")}
         </h1>
-        <p className="text-muted-foreground italic">
+        <p className="text-sm text-muted-foreground">
           {i18n.language === 'vi' ? "Nơi tôi chia sẻ những khoảnh khắc và suy nghĩ hàng ngày." : "Where I share daily moments and thoughts."}
         </p>
       </motion.div>
 
       {user && (
-        <Card className="mb-8 border-none bg-background/50 backdrop-blur-md shadow-xl ring-1 ring-white/10 overflow-hidden">
-          <CardContent className="p-4">
-            <div className="flex gap-4">
-              <Avatar className="h-10 w-10 ring-2 ring-primary/20">
+        <Card className="mb-4 border border-border bg-card shadow-sm overflow-hidden rounded-lg">
+          <CardContent className="p-3">
+            <div className="flex items-center gap-2">
+              <Avatar className="h-10 w-10 shrink-0">
                 <AvatarImage src={profile?.avatar_url} />
-                <AvatarFallback>{profile?.name?.[0] || user.email?.[0].toUpperCase()}</AvatarFallback>
+                <AvatarFallback>{profile?.name?.[0] || "U"}</AvatarFallback>
               </Avatar>
-              <div className="flex-1 space-y-4">
+              
+              <div 
+                className="flex-1 bg-muted/50 hover:bg-muted transition-colors rounded-full px-4 py-2 cursor-pointer text-muted-foreground text-[15px]"
+                onClick={() => setIsExpanded(true)}
+              >
+                {profile?.name ? `${profile.name.split(' ').pop()} ơi, bạn đang nghĩ gì thế?` : "Bạn đang nghĩ gì thế?"}
+              </div>
+
+              <div className="flex items-center gap-1">
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-red-500 hover:bg-red-500/10">
+                  <Video className="h-5 w-5" />
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-9 w-9 text-green-500 hover:bg-green-500/10" 
+                  onClick={() => {
+                    setIsExpanded(true)
+                    setTimeout(() => fileInputRef.current?.click(), 100)
+                  }}
+                >
+                  <ImageIcon className="h-5 w-5" />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-9 w-9 text-pink-500 hover:bg-pink-500/10">
+                  <Film className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Expanded section */}
+            {isExpanded && (
+              <div className="mt-4 pt-4 border-t border-border/50 animate-in fade-in slide-in-from-top-2 duration-300">
                 <Textarea
-                  placeholder={i18n.language === 'vi' ? "Hôm nay bạn thế nào?" : "What's on your mind?"}
+                  id="post-textarea"
+                  placeholder={i18n.language === 'vi' ? "Viết nội dung..." : "Write something..."}
                   value={newPost}
                   onChange={(e) => setNewPost(e.target.value)}
-                  className="min-h-[80px] border-none bg-transparent focus-visible:ring-0 resize-none p-0 text-lg"
+                  className="min-h-[120px] border-none bg-transparent focus-visible:ring-0 resize-none px-1 py-2 text-lg mb-4"
+                  autoFocus
                 />
                 
                 {selectedImages.length > 0 && (
-                  <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div className="grid grid-cols-2 gap-2 mb-4">
                     {selectedImages.map((img, idx) => (
-                      <div key={idx} className="relative group rounded-lg overflow-hidden h-32">
+                      <div key={idx} className="relative group rounded-lg overflow-hidden h-40">
                         <img src={img.preview} alt="" className="w-full h-full object-cover" />
                         <button 
                           onClick={() => removeImage(idx)}
-                          className="absolute top-1 right-1 bg-black/50 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="absolute top-2 right-2 bg-black/60 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                          <X className="h-3 w-3" />
+                          <X className="h-4 w-4" />
                         </button>
                       </div>
                     ))}
                   </div>
                 )}
 
-                <div className="flex items-center justify-between pt-2 border-t border-white/5">
-                  <div className="flex gap-2">
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      multiple 
-                      className="hidden" 
-                      ref={fileInputRef}
-                      onChange={handleImageSelect}
-                    />
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      className="text-primary hover:bg-primary/10 transition-colors font-medium"
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      <ImageIcon className="h-4 w-4 mr-2" />
-                      {i18n.language === 'vi' ? "Ảnh" : "Photo"}
-                    </Button>
-                  </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="ghost" onClick={() => { setIsExpanded(false); setNewPost(""); setSelectedImages([]); }}>
+                    Hủy
+                  </Button>
                   <Button 
                     onClick={handleCreatePost} 
                     disabled={(!newPost.trim() && selectedImages.length === 0) || isSubmitting}
-                    className="rounded-full px-6 shadow-lg shadow-primary/20 hover:scale-105 transition-transform bg-primary text-primary-foreground"
+                    className="rounded-md px-8 py-2 bg-primary text-primary-foreground font-semibold"
                   >
-                    {isSubmitting ? (
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                    ) : (
-                      <Send className="h-4 w-4 mr-2" />
-                    )}
-                    {isSubmitting ? (uploadingImages ? "Đang tải ảnh..." : "Đang đăng...") : (i18n.language === 'vi' ? "Đăng" : "Post")}
+                    {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                    {isSubmitting ? "Đang đăng..." : "Đăng bài"}
                   </Button>
                 </div>
               </div>
-            </div>
+            )}
+            
+            <input 
+              type="file" 
+              accept="image/*" 
+              multiple 
+              className="hidden" 
+              ref={fileInputRef}
+              onChange={handleImageSelect}
+            />
           </CardContent>
         </Card>
       )}
@@ -255,16 +372,16 @@ export default function Feed() {
             ))}
           </div>
         ) : (
-          <div className="space-y-6">
+            <div className="space-y-4">
             {posts.map((post) => (
               <motion.div 
                 key={post.id} 
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
+                exit={{ opacity: 0, scale: 0.98 }}
                 layout
               >
-                <Card className="border-none bg-background/50 backdrop-blur-md shadow-lg ring-1 ring-white/10 hover:ring-primary/20 transition-all duration-300 group">
+                <Card className="border border-border bg-card shadow-sm hover:border-primary/30 transition-all duration-300 rounded-md">
                   <CardHeader className="p-4 flex-row items-center justify-between space-y-0">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-10 w-10">
@@ -272,26 +389,38 @@ export default function Feed() {
                         <AvatarFallback>{post.profiles?.name?.[0] || "A"}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-semibold text-sm">{post.profiles?.name || "Admin"}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-wider">
-                          {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: dateLocale })}
-                        </p>
+                        <p className="font-semibold text-sm hover:underline cursor-pointer">{post.profiles?.name || "Admin"}</p>
+                        <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                          <span>{formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: dateLocale })}</span>
+                          <span>•</span>
+                          <Globe className="h-3 w-3" />
+                        </div>
                       </div>
                     </div>
-                    {user?.id === post.user_id && (
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 text-muted-foreground opacity-0 group-hover:opacity-100 hover:text-destructive transition-all"
-                        onClick={() => handleDeletePost(post.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
+                    <div className="flex items-center gap-1">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:bg-muted">
+                        <MoreHorizontal className="h-4 w-4" />
                       </Button>
-                    )}
+                      {user?.id === post.user_id && (
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-muted"
+                          onClick={() => handleDeletePost(post.id)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
                   </CardHeader>
-                  <CardContent className="px-4 pb-4 pt-0">
+                  <CardContent className={cn("px-0 pb-0 pt-0 overflow-hidden", !post.image_urls?.length && post.content?.length < 120 && "bg-gradient-to-br from-primary to-blue-600 min-h-[240px] flex items-center justify-center px-8 text-center")}>
                     {post.content && (
-                      <p className="text-base leading-relaxed whitespace-pre-wrap mb-4">
+                      <p className={cn(
+                        "whitespace-pre-wrap",
+                        !post.image_urls?.length && post.content?.length < 120 
+                          ? "text-xl md:text-2xl font-bold text-white" 
+                          : "text-sm md:text-base px-4 py-3 leading-normal"
+                      )}>
                         {post.content}
                       </p>
                     )}
@@ -306,19 +435,89 @@ export default function Feed() {
                       </div>
                     )}
                   </CardContent>
-                  <CardFooter className="p-2 border-t border-white/5 flex justify-between">
-                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-red-500 flex-1 gap-2">
-                      <Heart className="h-4 w-4" />
-                      <span className="text-xs">{post.likes_count || 0}</span>
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary flex-1 gap-2">
-                      <MessageCircle className="h-4 w-4" />
-                      <span className="text-xs">0</span>
-                    </Button>
-                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-green-500 flex-1 gap-2">
-                      <Share2 className="h-4 w-4" />
-                      <span className="text-xs">{i18n.language === 'vi' ? "Chia sẻ" : "Share"}</span>
-                    </Button>
+                  <CardFooter className="flex flex-col items-stretch p-0">
+                    <div className="px-4 py-2 flex justify-between items-center text-[12px] text-muted-foreground border-b border-border/50">
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-1.5 hover:underline cursor-pointer">
+                          <ThumbsUp className="h-3.5 w-3.5" />
+                          <span>{post.likes_count || 0}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5 hover:underline cursor-pointer">
+                          <MessageCircle className="h-3.5 w-3.5" />
+                          <span>{0}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center -space-x-1">
+                        <div className="bg-primary rounded-full p-0.5 border border-background z-10">
+                          <ThumbsUp className="h-2 w-2 text-white" fill="currentColor" />
+                        </div>
+                        <div className="bg-red-500 rounded-full p-0.5 border border-background">
+                          <Heart className="h-2 w-2 text-white" fill="currentColor" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="p-1 flex justify-between">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className={cn(
+                          "flex-1 gap-2 h-9 text-sm transition-colors",
+                          userLikes.has(post.id) ? "text-primary hover:bg-primary/5" : "text-muted-foreground hover:bg-muted"
+                        )}
+                        onClick={() => handleLike(post.id)}
+                      >
+                        <ThumbsUp className={cn("h-4 w-4", userLikes.has(post.id) && "fill-current")} />
+                        <span>{i18n.language === 'vi' ? "Thích" : "Like"}</span>
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className={cn(
+                          "text-muted-foreground hover:bg-muted flex-1 gap-2 h-9 text-sm",
+                          activeCommentPost === post.id && "bg-muted text-foreground"
+                        )}
+                        onClick={() => setActiveCommentPost(activeCommentPost === post.id ? null : post.id)}
+                      >
+                        <MessageCircle className="h-4 w-4" />
+                        <span>{i18n.language === 'vi' ? "Bình luận" : "Comment"}</span>
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-muted-foreground hover:bg-muted flex-1 gap-2 h-9 text-sm"
+                        onClick={() => handleShare(post)}
+                      >
+                        <Share2 className="h-4 w-4" />
+                        <span>{i18n.language === 'vi' ? "Chia sẻ" : "Share"}</span>
+                      </Button>
+                    </div>
+
+                    {activeCommentPost === post.id && (
+                      <div className="p-3 border-t border-border/50 animate-in slide-in-from-top-2 duration-200">
+                        <div className="flex gap-2">
+                          <Avatar className="h-8 w-8">
+                            <AvatarImage src={profile?.avatar_url} />
+                            <AvatarFallback>{profile?.name?.[0] || "U"}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex-1 flex gap-2">
+                            <Textarea
+                              placeholder={i18n.language === 'vi' ? "Viết bình luận..." : "Write a comment..."}
+                              value={commentText}
+                              onChange={(e) => setCommentText(e.target.value)}
+                              className="min-h-[36px] max-h-[120px] py-1.5 px-3 bg-muted/50 border-none focus-visible:ring-1 focus-visible:ring-primary/20 text-sm resize-none rounded-xl"
+                            />
+                            <Button 
+                              size="icon" 
+                              className="h-8 w-8 shrink-0 rounded-full"
+                              disabled={!commentText.trim()}
+                              onClick={() => handleComment(post.id)}
+                            >
+                              <Send className="h-3.5 w-3.5" />
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </CardFooter>
                 </Card>
               </motion.div>

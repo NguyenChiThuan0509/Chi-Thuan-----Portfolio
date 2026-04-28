@@ -70,12 +70,12 @@ export default function Home() {
               {displayBio}
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4 md:justify-start">
-              <Button asChild size="lg" className="rounded-full">
+              <Button asChild size="lg" className="rounded-md">
                 <Link to="/projects">
                   {t("home.view_projects")} <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="rounded-full">
+              <Button asChild variant="outline" size="lg" className="rounded-md">
                 <Link to="/contact">{t("home.contact_me")}</Link>
               </Button>
             </div>
@@ -85,7 +85,7 @@ export default function Home() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="relative h-64 w-64 overflow-hidden rounded-full border-4 border-primary/20 md:h-80 md:w-80"
+          className="relative h-64 w-64 overflow-hidden rounded-full border border-border shadow-xl md:h-80 md:w-80"
         >
           <img
             src={profile.avatar_url || "/anh_dai_dien.png"}
@@ -113,7 +113,7 @@ export default function Home() {
                 whileHover={{ y: -5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <Card className="flex h-full flex-col items-center justify-center p-6 text-center shadow-sm hover:shadow-md transition-shadow">
+                <Card className="flex h-full flex-col items-center justify-center p-6 text-center border border-border shadow-sm hover:border-primary/50 hover:shadow-md transition-all rounded-md">
                   <IconComponent className="mb-4 h-10 w-10 text-primary" />
                   <span className="font-medium">{skill.name}</span>
                 </Card>
@@ -136,8 +136,8 @@ export default function Home() {
         </div>
         <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           {projects.map((project) => (
-            <motion.div key={project.id} whileHover={{ y: -10 }} transition={{ duration: 0.3 }}>
-              <Card className="overflow-hidden shadow-lg h-full flex flex-col">
+            <motion.div key={project.id} whileHover={{ y: -5 }} transition={{ duration: 0.3 }}>
+              <Card className="overflow-hidden border border-border shadow-sm h-full flex flex-col rounded-md hover:border-primary/50 transition-colors">
                 <div className="aspect-video overflow-hidden">
                   <img
                     src={project.image_url}
@@ -157,16 +157,16 @@ export default function Home() {
                       </Badge>
                     ))}
                   </div>
-                  <div className="mt-auto flex space-x-4">
-                    <Button asChild size="sm" className="flex-1" variant="outline">
+                  <div className="mt-auto flex space-x-3">
+                    <Button asChild size="sm" className="flex-1 rounded-md" variant="outline">
                       <Link to={`/projects/${project.id}`}>
-                        Case Study
+                        Details
                       </Link>
                     </Button>
                     {project.live_url && (
-                      <Button asChild size="sm" className="flex-1">
+                      <Button asChild size="sm" className="flex-1 rounded-md">
                         <a href={project.live_url} target="_blank" rel="noopener noreferrer">
-                          Live Demo
+                          Demo
                         </a>
                       </Button>
                     )}
@@ -178,21 +178,21 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="mt-32 rounded-3xl bg-primary px-8 py-16 text-center text-primary-foreground shadow-2xl">
-        <h2 className="text-3xl font-bold md:text-5xl">
+      <section className="mt-32 rounded-md bg-card border border-border px-8 py-16 text-center shadow-sm">
+        <h2 className="text-3xl font-bold md:text-5xl text-foreground">
           {currentLang === 'vi' ? "Bạn có dự án mới cần thực hiện?" : "Have a project in mind?"}
         </h2>
-        <p className="mt-6 text-xl opacity-90">
+        <p className="mt-6 text-xl text-muted-foreground">
           {currentLang === 'vi' 
             ? "Hãy liên hệ với tôi để cùng nhau tạo ra những sản phẩm tuyệt vời." 
             : "Let's work together to build something amazing."}
         </p>
         <div className="mt-10 flex justify-center gap-4">
-          <Button asChild size="lg" variant="secondary" className="rounded-full">
+          <Button asChild size="lg" variant="default" className="rounded-md">
             <Link to="/contact">{t("home.contact_me")}</Link>
           </Button>
           {profile.cv_url && (
-            <Button asChild size="lg" variant="outline" className="rounded-full bg-transparent text-primary-foreground border-primary-foreground hover:bg-white hover:text-primary">
+            <Button asChild size="lg" variant="outline" className="rounded-md">
               <a href={profile.cv_url} download>
                 <Download className="mr-2 h-4 w-4" /> {currentLang === 'vi' ? "Tải CV" : "Download CV"}
               </a>

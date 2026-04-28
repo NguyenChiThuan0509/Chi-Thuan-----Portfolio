@@ -157,7 +157,7 @@ export default function ProjectEditor() {
                 id="title"
                 value={project.title}
                 onChange={(e) => setProject({ ...project, title: e.target.value })}
-                placeholder="Ví dụ: E-commerce Web App"
+                className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                 required
               />
             </div>
@@ -169,6 +169,7 @@ export default function ProjectEditor() {
                 value={project.description}
                 onChange={(e) => setProject({ ...project, description: e.target.value })}
                 placeholder="Mô tả tóm tắt về dự án..."
+                className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                 rows={3}
                 required
               />
@@ -183,6 +184,7 @@ export default function ProjectEditor() {
                     value={project.image_url}
                     onChange={(e) => setProject({ ...project, image_url: e.target.value })}
                     placeholder="URL ảnh hoặc upload..."
+                    className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   />
                   <input type="file" id="project-upload" className="hidden" accept="image/*" onChange={handleFileUpload} />
                   <Button type="button" variant="outline" size="icon" onClick={() => document.getElementById('project-upload').click()}>
@@ -196,6 +198,7 @@ export default function ProjectEditor() {
                   id="tech"
                   value={project.tech_stack}
                   onChange={(e) => setProject({ ...project, tech_stack: e.target.value })}
+                  className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   placeholder="React, TailwindCSS, Supabase..."
                 />
               </div>
@@ -208,6 +211,7 @@ export default function ProjectEditor() {
                   id="github"
                   value={project.github_url}
                   onChange={(e) => setProject({ ...project, github_url: e.target.value })}
+                  className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   placeholder="https://github.com/..."
                 />
               </div>
@@ -217,6 +221,7 @@ export default function ProjectEditor() {
                   id="live"
                   value={project.live_url}
                   onChange={(e) => setProject({ ...project, live_url: e.target.value })}
+                  className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   placeholder="https://my-app.com"
                 />
               </div>
@@ -235,6 +240,7 @@ export default function ProjectEditor() {
                   id="challenge"
                   value={project.challenge}
                   onChange={(e) => setProject({ ...project, challenge: e.target.value })}
+                  className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   placeholder="Vấn đề bạn gặp phải khi thực hiện dự án này là gì?"
                   rows={4}
                 />
@@ -248,6 +254,7 @@ export default function ProjectEditor() {
                   id="solution"
                   value={project.solution}
                   onChange={(e) => setProject({ ...project, solution: e.target.value })}
+                  className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   placeholder="Bạn đã giải quyết vấn đề đó như thế nào?"
                   rows={4}
                 />
@@ -261,6 +268,7 @@ export default function ProjectEditor() {
                   id="result"
                   value={project.result}
                   onChange={(e) => setProject({ ...project, result: e.target.value })}
+                  className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   placeholder="Kết quả cuối cùng và bài học rút ra..."
                   rows={4}
                 />

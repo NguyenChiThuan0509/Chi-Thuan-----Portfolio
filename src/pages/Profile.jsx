@@ -188,6 +188,7 @@ export default function Profile() {
                     id="name"
                     value={profile.name}
                     onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                    className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                     required
                   />
                 </div>
@@ -197,6 +198,7 @@ export default function Profile() {
                     id="name_en"
                     value={profile.name_en || ""}
                     onChange={(e) => setProfile({ ...profile, name_en: e.target.value })}
+                    className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   />
                 </div>
               </div>
@@ -208,6 +210,7 @@ export default function Profile() {
                     id="title"
                     value={profile.title}
                     onChange={(e) => setProfile({ ...profile, title: e.target.value })}
+                    className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                     required
                   />
                 </div>
@@ -217,6 +220,7 @@ export default function Profile() {
                     id="title_en"
                     value={profile.title_en || ""}
                     onChange={(e) => setProfile({ ...profile, title_en: e.target.value })}
+                    className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   />
                 </div>
               </div>
@@ -227,6 +231,7 @@ export default function Profile() {
                   id="bio"
                   value={profile.bio}
                   onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                  className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   rows={4}
                 />
               </div>
@@ -237,6 +242,7 @@ export default function Profile() {
                   id="bio_en"
                   value={profile.bio_en || ""}
                   onChange={(e) => setProfile({ ...profile, bio_en: e.target.value })}
+                  className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   rows={4}
                 />
               </div>

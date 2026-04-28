@@ -31,6 +31,7 @@ export default function Guestbook() {
   // Form states
   const [name, setName] = useState("")
   const [content, setContent] = useState("")
+  const [isExpanded, setIsExpanded] = useState(false)
   
   const messagesEndRef = useRef(null)
   const locale = i18n.language === 'vi' ? vi : enUS
@@ -116,6 +117,7 @@ export default function Guestbook() {
       if (error) throw error
       
       setContent("")
+      setIsExpanded(false)
       if (!user) setName("")
       toast.success(i18n.language === 'vi' ? "Cảm ơn bạn đã để lại lời nhắn!" : "Thanks for your message!")
     } catch (error) {
@@ -167,57 +169,81 @@ export default function Guestbook() {
           </p>
         </div>
 
-        <Card className="glass-card overflow-hidden border-primary/20">
-          <CardHeader className="bg-primary/5">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-yellow-500" />
-              {i18n.language === 'vi' ? "Gửi lời nhắn mới" : "Send a new message"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {!user && (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">{i18n.language === 'vi' ? "Tên của bạn" : "Your Name"}</label>
-                  <Input 
-                    placeholder={i18n.language === 'vi' ? "Nhập tên..." : "Enter your name..."}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="bg-background/50 border-primary/10 focus:border-primary/30"
-                  />
+        <Card className="mb-8 border border-border bg-card shadow-sm overflow-hidden rounded-lg">
+          <CardContent className="p-3">
+            {!isExpanded ? (
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10 shrink-0">
+                  <AvatarImage src={profile?.avatar_url || "/anh_dai_dien.png"} />
+                  <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                </Avatar>
+                <div 
+                  className="flex-1 bg-muted/50 hover:bg-muted transition-colors rounded-full px-4 py-2 cursor-pointer text-muted-foreground text-sm"
+                  onClick={() => setIsExpanded(true)}
+                >
+                  {user ? (profile?.name ? `${profile.name.split(' ').pop()} ơi, hãy để lại lời nhắn...` : "Hãy để lại lời nhắn...") : "Hãy để lại lời nhắn..."}
                 </div>
-              )}
-              {user && (
-                <div className="flex items-center gap-3 p-3 rounded-lg bg-primary/5 border border-primary/10 mb-2">
-                  <Avatar className="h-8 w-8">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-9 w-9 text-primary hover:bg-primary/10"
+                  onClick={() => setIsExpanded(true)}
+                >
+                  <Send className="h-5 w-5" />
+                </Button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="flex items-center gap-3 mb-2">
+                  <Avatar className="h-8 w-8 shrink-0">
                     <AvatarImage src={profile?.avatar_url || "/anh_dai_dien.png"} />
-                    <AvatarFallback><User /></AvatarFallback>
+                    <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
                   </Avatar>
-                  <span className="text-sm font-medium">
-                    {i18n.language === 'vi' ? "Đang gửi với tên:" : "Sending as:"} <strong>{profile?.name || user.email}</strong>
+                  <span className="text-sm font-semibold">
+                    {user ? (profile?.name || user.email) : (i18n.language === 'vi' ? "Khách ẩn danh" : "Guest")}
                   </span>
                 </div>
-              )}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">{i18n.language === 'vi' ? "Nội dung" : "Content"}</label>
-                <Textarea 
-                  placeholder={i18n.language === 'vi' ? "Viết gì đó thú vị..." : "Write something interesting..."}
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  required
-                  className="min-h-[100px] bg-background/50 border-primary/10 focus:border-primary/30"
-                />
-              </div>
-              <Button 
-                type="submit" 
-                className="w-full btn-neon gap-2" 
-                disabled={submitting}
-              >
-                {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                {i18n.language === 'vi' ? "Gửi lời nhắn" : "Send Message"}
-              </Button>
-            </form>
+
+                {!user && (
+                  <div className="space-y-1.5">
+                    <Input 
+                      placeholder={i18n.language === 'vi' ? "Tên của bạn" : "Your Name"}
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      className="bg-transparent border-none focus-visible:ring-0 px-1 text-base font-medium"
+                      autoFocus
+                    />
+                  </div>
+                )}
+                
+                <div className="space-y-1.5">
+                  <Textarea 
+                    placeholder={i18n.language === 'vi' ? "Viết gì đó thú vị..." : "Write something interesting..."}
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
+                    required
+                    className="min-h-[120px] bg-transparent border-none focus-visible:ring-0 px-1 py-2 text-lg resize-none"
+                    autoFocus={!!user}
+                  />
+                </div>
+
+                <div className="flex justify-end gap-2 pt-2 border-t border-border/50">
+                  <Button variant="ghost" size="sm" type="button" onClick={() => { setIsExpanded(false); setContent(""); if(!user) setName(""); }}>
+                    {i18n.language === 'vi' ? "Hủy" : "Cancel"}
+                  </Button>
+                  <Button 
+                    type="submit" 
+                    size="sm"
+                    className="rounded-md px-8 py-2 bg-primary text-primary-foreground font-semibold"
+                    disabled={submitting}
+                  >
+                    {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                    {i18n.language === 'vi' ? "Gửi lời nhắn" : "Send Message"}
+                  </Button>
+                </div>
+              </form>
+            )}
           </CardContent>
         </Card>
 
