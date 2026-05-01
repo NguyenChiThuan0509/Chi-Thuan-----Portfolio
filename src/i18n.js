@@ -16,6 +16,7 @@ const resources = {
         "notes": "Ghi chú",
         "attendance": "Điểm danh",
         "guestbook": "Lưu bút",
+        "videos": "Video bài giảng",
 
         "login": "Đăng nhập",
         "profile": "Hồ sơ cá nhân",
@@ -43,6 +44,7 @@ const resources = {
         "notes": "Notes",
         "attendance": "Attendance",
         "guestbook": "Guestbook",
+        "videos": "Videos",
 
         "login": "Login",
         "profile": "Profile",

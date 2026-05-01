@@ -17,6 +17,7 @@ import Feed from "@/pages/Feed"
 import Notes from "@/pages/Notes"
 import Attendance from "@/pages/Attendance"
 import Guestbook from "@/pages/Guestbook"
+import Videos from "@/pages/Videos"
 
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
             <Route path="/feed" element={<Feed />} />
             <Route path="/notes" element={<Notes />} />
             <Route path="/attendance" element={<Attendance />} />
+            <Route path="/videos" element={<Videos />} />
             <Route path="/guestbook" element={<Guestbook />} />
 
             <Route path="/contact" element={<Contact />} />

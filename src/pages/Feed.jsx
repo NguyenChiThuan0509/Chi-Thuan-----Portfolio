@@ -25,8 +25,34 @@ export default function Feed() {
   const [userLikes, setUserLikes] = useState(new Set())
   const [activeCommentPost, setActiveCommentPost] = useState(null)
   const [commentText, setCommentText] = useState("")
+  const [videoUrl, setVideoUrl] = useState("")
+  const [showVideoInput, setShowVideoInput] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
+  const [videoFile, setVideoFile] = useState(null)
+  const [videoPreview, setVideoPreview] = useState(null)
   const fileInputRef = useRef(null)
+  const videoFileInputRef = useRef(null)
+
+  // Helper function to get YouTube/Vimeo embed URL
+  const getEmbedUrl = (url) => {
+    if (!url) return null;
+    
+    // YouTube
+    const ytRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([a-zA-Z0-9_-]{11})/;
+    const ytMatch = url.match(ytRegex);
+    if (ytMatch) return `https://www.youtube.com/embed/${ytMatch[1]}`;
+    
+    // Vimeo
+    const vimeoRegex = /(?:https?:\/\/)?(?:www\.)?vimeo\.com\/(\d+)/;
+    const vimeoMatch = url.match(vimeoRegex);
+    if (vimeoMatch) return `https://player.vimeo.com/video/${vimeoMatch[1]}`;
+    
+    // Direct video link
+    const videoExts = ['.mp4', '.webm', '.ogg', '.mov'];
+    if (videoExts.some(ext => url.toLowerCase().includes(ext))) return url;
+    
+    return null;
+  };
 
   const dateLocale = i18n.language === 'vi' ? vi : enUS
 
@@ -183,6 +209,29 @@ export default function Feed() {
     setSelectedImages(newImages)
   }
 
+  const handleVideoSelect = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    if (file.size > 50 * 1024 * 1024) { // 50MB limit
+      toast.error("Video quá lớn. Vui lòng chọn file dưới 50MB hoặc sử dụng link.")
+      return
+    }
+
+    if (videoPreview) URL.revokeObjectURL(videoPreview)
+    
+    setVideoFile(file)
+    setVideoPreview(URL.createObjectURL(file))
+    setVideoUrl("")
+    setShowVideoInput(false)
+  }
+
+  const removeVideo = () => {
+    if (videoPreview) URL.revokeObjectURL(videoPreview)
+    setVideoFile(null)
+    setVideoPreview(null)
+  }
+
   async function uploadImages() {
     const urls = []
     for (const item of selectedImages) {
@@ -205,8 +254,27 @@ export default function Feed() {
     return urls
   }
 
+  async function uploadVideo() {
+    if (!videoFile) return null
+    const fileExt = videoFile.name.split('.').pop()
+    const fileName = `${Math.random()}.${fileExt}`
+    const filePath = `${user.id}/videos/${fileName}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('posts')
+      .upload(filePath, videoFile)
+
+    if (uploadError) throw uploadError
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('posts')
+      .getPublicUrl(filePath)
+    
+    return publicUrl
+  }
+
   async function handleCreatePost() {
-    if (!newPost.trim() && selectedImages.length === 0) return
+    if (!newPost.trim() && selectedImages.length === 0 && !videoUrl.trim() && !videoFile) return
     if (!user) {
       toast.error("Bạn cần đăng nhập để đăng bài")
       return
@@ -221,11 +289,17 @@ export default function Feed() {
         imageUrls = await uploadImages()
       }
 
+      let finalVideoUrl = videoUrl.trim() || null
+      if (videoFile) {
+        finalVideoUrl = await uploadVideo()
+      }
+
       const { error } = await supabase.from("posts").insert([
         {
           content: newPost,
           user_id: user.id,
-          image_urls: imageUrls
+          image_urls: imageUrls,
+          video_url: finalVideoUrl
         },
       ])
 
@@ -233,6 +307,10 @@ export default function Feed() {
 
       setNewPost("")
       setSelectedImages([])
+      setVideoUrl("")
+      setVideoFile(null)
+      setVideoPreview(null)
+      setShowVideoInput(false)
       fetchPosts()
       toast.success("Đã đăng bài thành công!")
     } catch (error) {
@@ -288,7 +366,15 @@ export default function Feed() {
               </div>
 
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-red-500 hover:bg-red-500/10">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className={cn("h-9 w-9 text-red-500 hover:bg-red-500/10", videoFile && "bg-red-500/10")}
+                  onClick={() => {
+                    setIsExpanded(true)
+                    setTimeout(() => videoFileInputRef.current?.click(), 100)
+                  }}
+                >
                   <Video className="h-5 w-5" />
                 </Button>
                 <Button 
@@ -302,7 +388,17 @@ export default function Feed() {
                 >
                   <ImageIcon className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-9 w-9 text-pink-500 hover:bg-pink-500/10">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className={cn("h-9 w-9 text-pink-500 hover:bg-pink-500/10", showVideoInput && "bg-pink-500/10")}
+                  onClick={() => {
+                    setIsExpanded(true)
+                    setShowVideoInput(!showVideoInput)
+                    setVideoFile(null)
+                    setVideoPreview(null)
+                  }}
+                >
                   <Film className="h-5 w-5" />
                 </Button>
               </div>
@@ -319,6 +415,44 @@ export default function Feed() {
                   className="min-h-[120px] border-none bg-transparent focus-visible:ring-0 resize-none px-1 py-2 text-lg mb-4"
                   autoFocus
                 />
+                
+                {showVideoInput && (
+                  <div className="mb-4 animate-in slide-in-from-left-2 duration-300">
+                    <div className="flex items-center gap-2 bg-muted/30 p-2 rounded-lg border border-border/50 focus-within:border-primary/50 transition-colors">
+                      <Film className="h-4 w-4 text-pink-500 shrink-0" />
+                      <input 
+                        type="text"
+                        placeholder="Dán link YouTube, Vimeo hoặc link video trực tiếp..."
+                        value={videoUrl}
+                        onChange={(e) => setVideoUrl(e.target.value)}
+                        className="bg-transparent border-none focus:ring-0 text-sm flex-1 outline-none"
+                      />
+                      {videoUrl && (
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setVideoUrl("")}>
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                    {videoUrl && !getEmbedUrl(videoUrl) && (
+                      <p className="text-[10px] text-red-500 mt-1 ml-1">Link không hợp lệ hoặc không hỗ trợ</p>
+                    )}
+                  </div>
+                )}
+                
+                {videoPreview && (
+                  <div className="relative group rounded-xl overflow-hidden bg-black mb-4 aspect-video border border-border/50">
+                    <video src={videoPreview} className="w-full h-full object-contain" controls />
+                    <button 
+                      onClick={removeVideo}
+                      className="absolute top-2 right-2 bg-black/60 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                    <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-[10px] backdrop-blur-sm">
+                      Video đã chọn: {(videoFile.size / (1024 * 1024)).toFixed(2)} MB
+                    </div>
+                  </div>
+                )}
                 
                 {selectedImages.length > 0 && (
                   <div className="grid grid-cols-2 gap-2 mb-4">
@@ -337,12 +471,12 @@ export default function Feed() {
                 )}
 
                 <div className="flex justify-end gap-2">
-                  <Button variant="ghost" onClick={() => { setIsExpanded(false); setNewPost(""); setSelectedImages([]); }}>
+                  <Button variant="ghost" onClick={() => { setIsExpanded(false); setNewPost(""); setSelectedImages([]); setVideoUrl(""); setShowVideoInput(false); }}>
                     Hủy
                   </Button>
                   <Button 
                     onClick={handleCreatePost} 
-                    disabled={(!newPost.trim() && selectedImages.length === 0) || isSubmitting}
+                    disabled={(!newPost.trim() && selectedImages.length === 0 && !videoUrl.trim() && !videoFile) || isSubmitting || (videoUrl.trim() && !getEmbedUrl(videoUrl))}
                     className="rounded-md px-8 py-2 bg-primary text-primary-foreground font-semibold"
                   >
                     {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
@@ -359,6 +493,14 @@ export default function Feed() {
               className="hidden" 
               ref={fileInputRef}
               onChange={handleImageSelect}
+            />
+
+            <input 
+              type="file" 
+              accept="video/*" 
+              className="hidden" 
+              ref={videoFileInputRef}
+              onChange={handleVideoSelect}
             />
           </CardContent>
         </Card>
@@ -413,11 +555,11 @@ export default function Feed() {
                       )}
                     </div>
                   </CardHeader>
-                  <CardContent className={cn("px-0 pb-0 pt-0 overflow-hidden", !post.image_urls?.length && post.content?.length < 120 && "bg-gradient-to-br from-primary to-blue-600 min-h-[240px] flex items-center justify-center px-8 text-center")}>
+                  <CardContent className={cn("px-0 pb-0 pt-0 overflow-hidden", !post.image_urls?.length && !post.video_url && post.content?.length < 120 && post.content?.length > 0 && "bg-gradient-to-br from-primary to-blue-600 min-h-[240px] flex items-center justify-center px-8 text-center")}>
                     {post.content && (
                       <p className={cn(
                         "whitespace-pre-wrap",
-                        !post.image_urls?.length && post.content?.length < 120 
+                        !post.image_urls?.length && !post.video_url && post.content?.length < 120 
                           ? "text-xl md:text-2xl font-bold text-white" 
                           : "text-sm md:text-base px-4 py-3 leading-normal"
                       )}>
@@ -432,6 +574,26 @@ export default function Feed() {
                         {post.image_urls.map((url, idx) => (
                           <img key={idx} src={url} alt="" className="w-full h-48 md:h-64 object-cover hover:scale-105 transition-transform duration-500 cursor-pointer" />
                         ))}
+                      </div>
+                    )}
+                    {post.video_url && getEmbedUrl(post.video_url) && (
+                      <div className="aspect-video w-[92%] mx-auto mt-3 mb-3 bg-black overflow-hidden rounded-xl border border-border/50 shadow-sm">
+                        {getEmbedUrl(post.video_url).includes('youtube.com') || getEmbedUrl(post.video_url).includes('player.vimeo.com') ? (
+                          <iframe
+                            src={getEmbedUrl(post.video_url)}
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            title="Video Player"
+                          ></iframe>
+                        ) : (
+                          <video 
+                            src={post.video_url} 
+                            className="w-full h-full object-contain" 
+                            controls 
+                            playsInline
+                          />
+                        )}
                       </div>
                     )}
                   </CardContent>

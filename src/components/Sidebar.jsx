@@ -21,6 +21,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     { name: t("nav.feed"), href: "/feed", icon: LucideIcons.Rss },
     { name: t("nav.notes"), href: "/notes", icon: LucideIcons.FileText },
     { name: t("nav.attendance"), href: "/attendance", icon: LucideIcons.CalendarCheck },
+    { name: t("nav.videos"), href: "/videos", icon: LucideIcons.PlayCircle },
     { name: t("nav.guestbook"), href: "/guestbook", icon: LucideIcons.MessageSquare },
   ]
 
