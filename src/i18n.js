@@ -10,6 +10,7 @@ const resources = {
         "about": "Giới thiệu",
         "projects": "Dự án",
         "snippets": "Góc chia sẻ",
+        "collections": "Bộ sưu tập",
         "contact": "Liên hệ",
 
         "feed": "Bản tin",
@@ -38,6 +39,7 @@ const resources = {
         "about": "About",
         "projects": "Projects",
         "snippets": "Snippets",
+        "collections": "Collections",
         "contact": "Contact",
 
         "feed": "Feed",

@@ -13,6 +13,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     { name: t("nav.about"), href: "/about", icon: LucideIcons.User },
     { name: t("nav.projects"), href: "/projects", icon: LucideIcons.FolderGit2 },
     { name: t("nav.snippets"), href: "/snippets", icon: LucideIcons.Code2 },
+    { name: t("nav.collections"), href: "/collections", icon: LucideIcons.Image },
     { name: t("nav.contact"), href: "/contact", icon: LucideIcons.Mail },
   ]
 

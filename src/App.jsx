@@ -18,6 +18,7 @@ import Notes from "@/pages/Notes"
 import Attendance from "@/pages/Attendance"
 import Guestbook from "@/pages/Guestbook"
 import Videos from "@/pages/Videos"
+import Collections from "@/pages/Collections"
 
 
 function App() {
@@ -44,6 +45,7 @@ function App() {
             <Route path="/snippets/:id" element={<SnippetDetail />} />
             <Route path="/snippets/new" element={<SnippetEditor />} />
             <Route path="/snippets/:id/edit" element={<SnippetEditor />} />
+            <Route path="/collections" element={<Collections />} />
             <Route path="/login" element={<Login />} />
             <Route path="profile" element={<Profile />} />
           </Route>
