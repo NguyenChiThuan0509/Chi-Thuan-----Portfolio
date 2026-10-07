@@ -31,7 +31,6 @@ export default function Navbar() {
     { name: t("nav.home"), href: "/" },
     { name: t("nav.about"), href: "/about" },
     { name: t("nav.projects"), href: "/projects" },
-    { name: t("nav.snippets"), href: "/snippets" },
     { name: t("nav.contact"), href: "/contact" },
   ]
 
@@ -228,9 +227,9 @@ export default function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <Button asChild variant="default" size="sm" className="rounded-full px-4 h-8 text-xs font-semibold">
+              <Button asChild variant="default" size="sm" className="rounded-sm px-4 h-8 text-xs font-semibold">
                 <Link to="/login">
-                  <LogIn className="mr-1.5 h-3.5 w-3.5" /> {t("nav.login")}
+                  {t("nav.login")}
                 </Link>
               </Button>
             )}

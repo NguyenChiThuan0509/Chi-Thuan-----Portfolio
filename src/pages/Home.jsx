@@ -5,6 +5,7 @@ import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import { supabase } from "@/lib/supabase"
 import { useTranslation } from "react-i18next"
+import faceImg from "@/assets/face.png"
 
 const timeline = [
   {
@@ -127,24 +128,21 @@ export default function Home() {
           </motion.div>
         </div>
 
-        {/* Hero Avatar with Optical Depth */}
+        {/* Hero Portrait Image (transparent cutout, large size) */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.85 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          className="relative"
+          initial={{ opacity: 0, scale: 0.95, y: 15 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 280, damping: 22 }}
+          className="relative flex items-center justify-center shrink-0"
         >
-          <div className="absolute -inset-2 rounded-full bg-gradient-to-tr from-primary/30 via-transparent to-blue-500/20 blur-xl opacity-70" />
-          <div className="relative h-64 w-64 overflow-hidden rounded-full border-2 border-border/80 shadow-2xl md:h-80 md:w-80 ring-4 ring-background">
-            <img
-              src={profile.avatar_url || "/anh_dai_dien.png"}
-              alt={displayName}
-              width="320"
-              height="320"
-              fetchPriority="high"
-              className="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
-            />
-          </div>
+          <img
+            src={faceImg}
+            alt={displayName}
+            width="520"
+            height="520"
+            fetchPriority="high"
+            className="relative z-10 w-80 sm:w-96 md:w-[440px] lg:w-[480px] max-w-full h-auto object-contain select-none drop-shadow-lg transition-transform duration-500 hover:scale-[1.02]"
+          />
         </motion.div>
       </section>
 

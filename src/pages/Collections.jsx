@@ -28,6 +28,7 @@ import {
   Sparkles,
   Link2,
   AlertTriangle,
+  ChevronLeft,
   X
 } from "lucide-react"
 import { toast } from "sonner"
@@ -75,6 +76,17 @@ export default function Collections() {
     })
     fetchCollections()
   }, [])
+
+  // Close image viewer on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && selectedItem) {
+        setSelectedItem(null)
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [selectedItem])
 
   async function fetchCollections() {
     try {
@@ -360,7 +372,7 @@ export default function Collections() {
                       </Button>
                     </div>
 
-                    {/* Category Badge */}
+                    {/* Category Badge - Top Left */}
                     {item.category && (
                       <div className="absolute top-2.5 left-2.5">
                         <Badge
@@ -371,40 +383,35 @@ export default function Collections() {
                         </Badge>
                       </div>
                     )}
+
+                    {/* Date Badge - Top Right */}
+                    <div className="absolute top-2.5 right-2.5">
+                      <Badge
+                        variant="secondary"
+                        className="rounded-sm bg-background/85 backdrop-blur-md text-[11px] font-normal border border-border/50 text-muted-foreground flex items-center gap-1 py-0.5 px-2"
+                      >
+                        <Calendar className="h-3 w-3 text-muted-foreground/70" />
+                        {new Date(item.created_at || Date.now()).toLocaleDateString("vi-VN")}
+                      </Badge>
+                    </div>
                   </div>
 
                   {/* Card Content */}
-                  <div className="p-4 flex-1 flex flex-col justify-between">
-                    <div>
-                      <h3
-                        onClick={() => setSelectedItem(item)}
-                        className="font-semibold text-base leading-snug line-clamp-2 hover:text-primary cursor-pointer transition-colors"
-                        title={item.title}
-                      >
-                        {item.title}
-                      </h3>
-                      {item.description && (
-                        <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
-                          {item.description}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="mt-3 pt-3 border-t border-border/50 flex items-center justify-between text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="h-3.5 w-3.5 text-muted-foreground/70" />
-                        <span>
-                          {new Date(item.created_at || Date.now()).toLocaleDateString("vi-VN")}
-                        </span>
-                      </div>
-
-                      <button
-                        onClick={() => setSelectedItem(item)}
-                        className="text-xs text-primary hover:underline font-medium inline-flex items-center gap-1"
-                      >
-                        Chi tiết
-                      </button>
-                    </div>
+                  <div 
+                    className="p-4 flex-1 flex flex-col justify-start cursor-pointer"
+                    onClick={() => setSelectedItem(item)}
+                  >
+                    <h3
+                      className="font-semibold text-base leading-snug line-clamp-2 hover:text-primary transition-colors"
+                      title={item.title}
+                    >
+                      {item.title}
+                    </h3>
+                    {item.description && (
+                      <p className="mt-1.5 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
+                        {item.description}
+                      </p>
+                    )}
                   </div>
                 </div>
               </motion.div>
@@ -649,67 +656,86 @@ export default function Collections() {
         </DialogContent>
       </Dialog>
 
-      {/* Lightbox / Full-screen View Modal */}
-      <Dialog open={!!selectedItem} onOpenChange={(open) => !open && setSelectedItem(null)}>
-        <DialogContent className="max-w-4xl w-[95vw] max-h-[90vh] p-0 overflow-hidden rounded-sm bg-background/95 backdrop-blur-xl border border-border">
-          {selectedItem && (
-            <div className="flex flex-col md:flex-row h-full max-h-[90vh]">
-              {/* Large Image Preview */}
-              <div className="flex-1 bg-black/90 flex items-center justify-center p-2 relative overflow-hidden min-h-[300px] md:min-h-[500px]">
-                <img
-                  src={selectedItem.image_url}
-                  alt={selectedItem.title}
-                  className="max-h-[85vh] w-auto max-w-full object-contain"
-                />
+      {/* Full-screen Image Viewer Lightbox */}
+      <AnimatePresence>
+        {selectedItem && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col select-none"
+            role="dialog"
+            aria-modal="true"
+          >
+            {/* Top Bar / Header */}
+            <div className="h-14 border-b border-white/10 px-4 md:px-6 flex items-center justify-between shrink-0 bg-black/40">
+              {/* Left: Back button & Title */}
+              <div className="flex items-center gap-2 min-w-0 pr-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSelectedItem(null)}
+                  className="h-9 w-9 rounded-sm shrink-0 text-white/80 hover:text-white hover:bg-white/10"
+                  aria-label="Quay lại"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </Button>
+                <h2 className="text-sm md:text-base font-medium truncate text-white">
+                  {selectedItem.title}
+                </h2>
               </div>
 
-              {/* Sidebar Info */}
-              <div className="w-full md:w-80 p-5 flex flex-col justify-between bg-card border-t md:border-t-0 md:border-l border-border">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="secondary" className="rounded-sm">
-                      {selectedItem.category || "Chung"}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Calendar className="h-3 w-3" />
-                      {new Date(selectedItem.created_at || Date.now()).toLocaleDateString("vi-VN")}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h2 className="text-lg font-bold leading-tight">{selectedItem.title}</h2>
-                    {selectedItem.description && (
-                      <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
-                        {selectedItem.description}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                <div className="pt-6 mt-6 border-t border-border flex flex-col gap-2">
-                  <Button
-                    variant="outline"
-                    className="w-full rounded-sm gap-2 text-xs"
-                    asChild
+              {/* Right: Actions (Download & Close) */}
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  asChild
+                  className="h-9 w-9 rounded-sm text-white/80 hover:text-white hover:bg-white/10"
+                  title="Tải ảnh xuống"
+                >
+                  <a
+                    href={selectedItem.image_url}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Tải ảnh xuống"
                   >
-                    <a href={selectedItem.image_url} target="_blank" rel="noopener noreferrer" download>
-                      <Download className="h-3.5 w-3.5" /> Mở / Tải ảnh gốc
-                    </a>
-                  </Button>
+                    <Download className="h-4 w-4 md:h-5 md:w-5" />
+                  </a>
+                </Button>
 
-                  <Button
-                    variant="destructive"
-                    className="w-full rounded-sm gap-2 text-xs"
-                    onClick={(e) => openDeleteConfirm(e, selectedItem)}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" /> Xóa ảnh này
-                  </Button>
-                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSelectedItem(null)}
+                  className="h-9 w-9 rounded-sm text-white/80 hover:text-white hover:bg-white/10"
+                  aria-label="Đóng"
+                  title="Đóng (Esc)"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
               </div>
             </div>
-          )}
-        </DialogContent>
-      </Dialog>
+
+            {/* Main Full-Screen Image Viewport */}
+            <div 
+              className="flex-1 flex items-center justify-center p-4 md:p-8 overflow-hidden relative cursor-zoom-out"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setSelectedItem(null)
+              }}
+            >
+              <img
+                src={selectedItem.image_url}
+                alt={selectedItem.title}
+                className="max-h-[calc(100vh-5rem)] max-w-[calc(100vw-2rem)] w-auto h-auto object-contain drop-shadow-2xl rounded-sm cursor-default select-none"
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Custom Delete Confirmation Modal */}
       <Dialog open={!!itemToDelete} onOpenChange={(open) => !open && !isDeleting && setItemToDelete(null)}>

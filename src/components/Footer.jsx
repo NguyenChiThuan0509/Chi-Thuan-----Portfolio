@@ -1,4 +1,4 @@
-import { Github, Linkedin, Mail } from "lucide-react"
+import { Github, Mail } from "lucide-react"
 import { profileData } from "@/data/profile"
 
 export default function Footer() {
@@ -16,15 +16,6 @@ export default function Footer() {
             <Github className="h-5 w-5" aria-hidden="true" />
           </a>
           <a
-            href={profileData.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="LinkedIn Profile"
-            className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md p-1"
-          >
-            <Linkedin className="h-5 w-5" aria-hidden="true" />
-          </a>
-          <a
             href={`mailto:${profileData.email}`}
             aria-label="Email Contact"
             className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md p-1"
@@ -34,9 +25,6 @@ export default function Footer() {
         </div>
         <p className="text-sm text-muted-foreground">
           © {new Date().getFullYear()} {profileData.name}. Mọi quyền được bảo lưu.
-        </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Được xây dựng bằng React, TailwindCSS và Shadcn/UI
         </p>
       </div>
     </footer>

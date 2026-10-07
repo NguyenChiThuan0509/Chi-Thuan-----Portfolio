@@ -77,6 +77,31 @@
   * {
     border-color: hsl(var(--border));
   }
+  
+  /* Custom thin scrollbar */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: hsl(var(--muted-foreground) / 0.25) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.25);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.45);
+  }
+
   body {
     @apply bg-background text-foreground overflow-x-hidden selection:bg-primary/30 selection:text-foreground antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";

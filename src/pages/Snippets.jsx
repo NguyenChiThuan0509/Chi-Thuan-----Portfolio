@@ -3,25 +3,21 @@ import { motion, AnimatePresence } from "framer-motion"
 import { supabase } from "@/lib/supabase"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Search, Terminal, Lightbulb, BookOpen, Plus, Loader2, Code2, Calendar, Heart } from "lucide-react"
+import { Plus, Loader2, Code2, Calendar, Heart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
 import { Link } from "react-router-dom"
 
 const CATEGORIES = [
-  { id: 'all', label: 'Tất cả', icon: Search },
-  { id: 'tip', label: 'Mẹo hay', icon: Lightbulb },
-  { id: 'code', label: 'Code Snippets', icon: Terminal },
-  { id: 'article', label: 'Bài viết', icon: BookOpen },
+  { id: 'tip', label: 'Mẹo hay' },
+  { id: 'code', label: 'Code Snippets' },
+  { id: 'article', label: 'Bài viết' },
 ]
 
 export default function Snippets() {
   const [snippets, setSnippets] = useState([])
   const [loading, setLoading] = useState(true)
-  const [search, setSearch] = useState("")
-  const [category, setCategory] = useState("all")
   const [user, setUser] = useState(null)
 
   useEffect(() => {
@@ -64,13 +60,6 @@ export default function Snippets() {
     }
   }
 
-  const filteredSnippets = snippets.filter(s => {
-    const matchesSearch = s.title.toLowerCase().includes(search.toLowerCase()) || 
-                         s.description?.toLowerCase().includes(search.toLowerCase())
-    const matchesCategory = category === 'all' || s.category === category
-    return matchesSearch && matchesCategory
-  })
-
   return (
     <div className="container pt-8 md:pt-12 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
@@ -89,36 +78,6 @@ export default function Snippets() {
         )}
       </div>
 
-      <div className="flex flex-col md:flex-row gap-4 mb-8">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" aria-hidden="true" />
-          <Input 
-            placeholder="Tìm kiếm kiến thức…" 
-            aria-label="Tìm kiếm kiến thức"
-            className="pl-10"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
-          {CATEGORIES.map((cat) => {
-            const Icon = cat.icon
-            return (
-              <Button
-                key={cat.id}
-                variant={category === cat.id ? "default" : "outline"}
-                size="sm"
-                className="gap-2 whitespace-nowrap"
-                onClick={() => setCategory(cat.id)}
-              >
-                <Icon className="h-4 w-4" aria-hidden="true" />
-                {cat.label}
-              </Button>
-            )
-          })}
-        </div>
-      </div>
-
       {loading ? (
         <div className="flex h-40 items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
@@ -126,7 +85,7 @@ export default function Snippets() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
-            {filteredSnippets.map((snippet) => (
+            {snippets.map((snippet) => (
               <motion.div
                 key={snippet.id}
                 layout
@@ -212,9 +171,9 @@ export default function Snippets() {
         </div>
       )}
 
-      {!loading && filteredSnippets.length === 0 && (
+      {!loading && snippets.length === 0 && (
         <div className="text-center py-20">
-          <p className="text-xl text-muted-foreground">Chưa có bài viết nào trong mục này.</p>
+          <p className="text-xl text-muted-foreground">Chưa có bài viết nào.</p>
         </div>
       )}
     </div>
