@@ -213,7 +213,7 @@ export default function Videos() {
                   <div>
                     <label className="text-sm font-medium mb-1.5 block">Tiêu đề hoặc mô tả</label>
                     <Textarea
-                      placeholder="Nhập mô tả cho video bài giảng này..."
+                      placeholder="Nhập mô tả cho video bài giảng này…"
                       value={newPost}
                       onChange={(e) => setNewPost(e.target.value)}
                       className="min-h-[120px] resize-none"
@@ -227,20 +227,17 @@ export default function Videos() {
                       className={cn("flex-1 gap-2 h-12 border-2 hover:bg-primary/5 hover:border-primary/50 transition-all", videoFile && "border-primary bg-primary/5")}
                       onClick={() => videoFileInputRef.current?.click()}
                     >
-                      <Video className="h-4 w-4" />
-                      Tải video lên
+                      <Video className="h-4 w-4" aria-hidden="true" />
+                      {videoFile ? "Đã chọn video máy tính" : "Tải từ máy tính"}
                     </Button>
                     <Button 
                       type="button"
                       variant="outline" 
                       className={cn("flex-1 gap-2 h-12 border-2 hover:bg-primary/5 hover:border-primary/50 transition-all", showVideoInput && "border-primary bg-primary/5")}
-                      onClick={() => {
-                        setShowVideoInput(!showVideoInput)
-                        if (videoFile) removeVideo()
-                      }}
+                      onClick={() => setShowVideoInput(!showVideoInput)}
                     >
-                      <Film className="h-4 w-4" />
-                      Dùng link (YT/Vimeo)
+                      <Youtube className="h-4 w-4 text-red-500" aria-hidden="true" />
+                      Dán link YouTube
                     </Button>
                   </div>
                 </div>
@@ -250,10 +247,11 @@ export default function Videos() {
                     <div className="space-y-3">
                       <p className="text-sm font-medium">Dán đường dẫn video:</p>
                       <div className="flex items-center gap-2 bg-background p-2 rounded-lg border">
-                        <Film className="h-4 w-4 text-primary" />
+                        <Film className="h-4 w-4 text-primary" aria-hidden="true" />
                         <input 
                           type="text"
-                          placeholder="https://www.youtube.com/watch?v=..."
+                          placeholder="https://www.youtube.com/watch?v=…"
+                          aria-label="Đường dẫn video YouTube"
                           value={videoUrl}
                           onChange={(e) => setVideoUrl(e.target.value)}
                           className="bg-transparent border-none focus:ring-0 text-sm flex-1 outline-none"
@@ -277,8 +275,9 @@ export default function Videos() {
                         size="icon" 
                         className="absolute top-2 right-2 h-7 w-7 rounded-full"
                         onClick={removeVideo}
+                        aria-label="Xóa video đã chọn"
                       >
-                        <X className="h-4 w-4" />
+                        <X className="h-4 w-4" aria-hidden="true" />
                       </Button>
                     </div>
                   ) : (
@@ -371,8 +370,9 @@ export default function Videos() {
                         size="icon" 
                         className="h-8 w-8 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={() => handleDeletePost(post.id)}
+                        aria-label="Xóa bài đăng video"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4" aria-hidden="true" />
                       </Button>
                     )}
                   </div>

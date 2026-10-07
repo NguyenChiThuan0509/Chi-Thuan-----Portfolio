@@ -91,14 +91,21 @@ export default function AIChat() {
                     </div>
                   </div>
                 </div>
-                <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="text-white hover:bg-white/10">
-                  <X className="h-4 w-4" />
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setIsOpen(false)} 
+                  className="text-white hover:bg-white/10"
+                  aria-label="Đóng cửa sổ trợ lý ảo"
+                >
+                  <X className="h-4 w-4" aria-hidden="true" />
                 </Button>
               </CardHeader>
               
               <CardContent 
                 ref={scrollRef}
                 className="flex-grow overflow-y-auto p-4 space-y-4 scroll-smooth"
+                aria-live="polite"
               >
                 {messages.map((msg, i) => (
                   <motion.div
@@ -114,7 +121,7 @@ export default function AIChat() {
                       "h-8 w-8 rounded-lg flex items-center justify-center shrink-0",
                       msg.role === 'user' ? "bg-muted" : "bg-primary/10 text-primary"
                     )}>
-                      {msg.role === 'user' ? <User className="h-4 w-4" /> : <Sparkles className="h-4 w-4" />}
+                      {msg.role === 'user' ? <User className="h-4 w-4" aria-hidden="true" /> : <Sparkles className="h-4 w-4" aria-hidden="true" />}
                     </div>
                     <div className={cn(
                       "p-3 rounded-2xl text-sm leading-relaxed max-w-[80%] shadow-sm",
@@ -129,13 +136,13 @@ export default function AIChat() {
                 {isTyping && (
                   <div className="flex gap-3">
                     <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
                     </div>
                     <div className="bg-muted p-3 rounded-2xl rounded-tl-none">
                       <div className="flex gap-1">
-                        <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce" />
-                        <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.2s]" />
-                        <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce [animation-delay:0.4s]" />
+                        <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce motion-reduce:animate-none" />
+                        <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce motion-reduce:animate-none [animation-delay:0.2s]" />
+                        <span className="w-1.5 h-1.5 bg-primary/40 rounded-full animate-bounce motion-reduce:animate-none [animation-delay:0.4s]" />
                       </div>
                     </div>
                   </div>
@@ -147,11 +154,17 @@ export default function AIChat() {
                   <Input 
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    placeholder="Hỏi tôi về Thuận..."
+                    placeholder="Hỏi tôi về Thuận…"
+                    aria-label="Tin nhắn cho trợ lý ảo"
                     className="flex-grow border-primary/10 focus-visible:ring-primary bg-background"
                   />
-                  <Button type="submit" size="icon" disabled={!input.trim() || isTyping}>
-                    <Send className="h-4 w-4" />
+                  <Button 
+                    type="submit" 
+                    size="icon" 
+                    disabled={!input.trim() || isTyping}
+                    aria-label="Gửi tin nhắn cho trợ lý ảo"
+                  >
+                    <Send className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </form>
               </CardFooter>
@@ -166,15 +179,16 @@ export default function AIChat() {
       >
         <Button 
           onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? "Đóng trợ lý ảo" : "Mở trợ lý ảo AI"}
           className={cn(
             "h-14 w-14 rounded-full shadow-2xl transition-all duration-500",
             isOpen ? "bg-destructive hover:bg-destructive" : "bg-primary"
           )}
         >
-          {isOpen ? <X className="h-6 w-6" /> : <MessageSquare className="h-6 w-6" />}
+          {isOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <MessageSquare className="h-6 w-6" aria-hidden="true" />}
           {!isOpen && (
             <span className="absolute -top-1 -right-1 flex h-4 w-4">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span className="animate-ping motion-reduce:hidden absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
               <span className="relative inline-flex rounded-full h-4 w-4 bg-primary border-2 border-background"></span>
             </span>
           )}

@@ -40,8 +40,8 @@ export default function Contact() {
   return (
     <div className="container py-16">
       <div className="text-center mb-16 px-4">
-        <h1 className="text-4xl font-bold tracking-tight">Liên hệ với tôi</h1>
-        <p className="mt-4 text-muted-foreground max-w-2xl mx-auto">
+        <h1 className="text-4xl font-bold tracking-tight text-balance">Liên hệ với tôi</h1>
+        <p className="mt-4 text-muted-foreground max-w-2xl mx-auto text-pretty">
           Bạn có ý tưởng dự án hoặc chỉ muốn chào hỏi? Hãy gửi tin nhắn cho tôi qua biểu mẫu bên dưới
           hoặc kết nối với tôi qua các mạng xã hội.
         </p>
@@ -56,7 +56,7 @@ export default function Contact() {
         >
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="text-2xl">Gửi tin nhắn</CardTitle>
+              <CardTitle className="text-2xl text-balance">Gửi tin nhắn</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -64,6 +64,8 @@ export default function Contact() {
                   <label htmlFor="name" className="text-sm font-medium">Họ và tên</label>
                   <Input
                     id="name"
+                    name="name"
+                    autoComplete="name"
                     required
                     placeholder="Nhập họ và tên"
                     value={formData.name}
@@ -74,7 +76,10 @@ export default function Contact() {
                   <label htmlFor="email" className="text-sm font-medium">Email</label>
                   <Input
                     id="email"
+                    name="email"
                     type="email"
+                    autoComplete="email"
+                    spellCheck={false}
                     required
                     placeholder="email@example.com"
                     value={formData.email}
@@ -85,17 +90,18 @@ export default function Contact() {
                   <label htmlFor="message" className="text-sm font-medium">Nội dung tin nhắn</label>
                   <textarea
                     id="message"
+                    name="message"
                     required
-                    className="flex min-h-[150px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Nhập nội dung bạn muốn gửi..."
+                    className="flex min-h-[150px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Nhập nội dung bạn muốn gửi…"
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Đang gửi..." : (
+                  {isSubmitting ? "Đang gửi…" : (
                     <>
-                      Gửi tin nhắn <Send className="ml-2 h-4 w-4" />
+                      Gửi tin nhắn <Send className="ml-2 h-4 w-4" aria-hidden="true" />
                     </>
                   )}
                 </Button>
@@ -107,7 +113,7 @@ export default function Contact() {
 
         <div className="space-y-8">
           <div>
-            <h2 className="text-2xl font-bold mb-6">Thông tin kết nối</h2>
+            <h2 className="text-2xl font-bold mb-6 text-balance">Thông tin kết nối</h2>
             <div className="grid gap-4">
               {contactInfo.map((info, index) => (
                 <motion.a
@@ -116,10 +122,11 @@ export default function Contact() {
                   target={info.href.startsWith("http") ? "_blank" : undefined}
                   rel={info.href.startsWith("http") ? "noopener noreferrer" : undefined}
                   whileHover={{ x: 10 }}
-                  className="flex items-center p-4 rounded-xl border bg-card hover:border-primary/50 transition-colors"
+                  aria-label={`${info.label}: ${info.value}`}
+                  className="flex items-center p-4 rounded-xl border bg-card hover:border-primary/50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <div className="rounded-full bg-primary/10 p-3 text-primary mr-4">
-                    <info.icon className="h-6 w-6" />
+                    <info.icon className="h-6 w-6" aria-hidden="true" />
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{info.label}</p>

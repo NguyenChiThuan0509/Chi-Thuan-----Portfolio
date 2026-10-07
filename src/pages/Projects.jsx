@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { supabase } from "@/lib/supabase"
 import { Link } from "react-router-dom"
+import { cn } from "@/lib/utils"
 
 export default function Projects() {
   const [projects, setProjects] = useState([])
@@ -43,115 +44,161 @@ export default function Projects() {
     return matchesFilter && matchesSearch
   })
 
+  const filterCategories = ["all", "React", "Next.js", "TailwindCSS", "Node.js", "Supabase"]
+
   return (
-    <div className="container pt-8 md:pt-12 pb-20">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-        <div>
-          <h1 className="text-4xl font-bold tracking-tight">Dự án cá nhân</h1>
-          <p className="mt-2 text-lg text-muted-foreground max-w-2xl">
-            Những sản phẩm tâm huyết mà tôi đã thực hiện, từ ý tưởng đến triển khai thực tế.
+    <div className="container pt-8 md:pt-14 pb-24 space-y-10">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div className="space-y-2">
+          <h1 className="text-4xl font-extrabold tracking-tight text-foreground text-balance">Dự án cá nhân</h1>
+          <p className="text-lg text-muted-foreground max-w-2xl text-pretty">
+            Những sản phẩm tâm huyết mà tôi đã thực hiện, từ ý tưởng kiến trúc đến triển khai thực tế.
           </p>
         </div>
         {user && (
-          <Button asChild className="gap-2">
-            <Link to="/projects/new">
-              <Plus className="h-4 w-4" /> Thêm dự án
-            </Link>
-          </Button>
+          <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }}>
+            <Button asChild className="gap-2 rounded-xl shadow-md">
+              <Link to="/projects/new">
+                <Plus className="h-4 w-4" aria-hidden="true" /> Thêm dự án
+              </Link>
+            </Button>
+          </motion.div>
         )}
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6 items-center justify-between mb-12">
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Filter & Search Bar */}
+      <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+        <div className="relative w-full lg:w-80">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
           <Input
-            placeholder="Tìm kiếm dự án..."
-            className="pl-10"
+            placeholder="Tìm kiếm dự án…"
+            aria-label="Tìm kiếm dự án"
+            className="pl-10 h-10 rounded-xl bg-card/60 border-border/80 focus-visible:ring-primary/40"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        <Tabs defaultValue="all" className="w-full md:w-auto overflow-x-auto" onValueChange={setFilter}>
-          <TabsList className="bg-muted/50 p-1">
-            <TabsTrigger value="all">Tất cả</TabsTrigger>
-            {["React", "Next.js", "TailwindCSS", "Node.js"].map(tech => (
-              <TabsTrigger key={tech} value={tech}>{tech}</TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        {/* Custom Animated Pill Tabs */}
+        <div className="flex flex-wrap gap-1.5 p-1 rounded-2xl bg-muted/40 border border-border/50">
+          {filterCategories.map((tech) => {
+            const isActive = filter === tech
+            return (
+              <button
+                key={tech}
+                type="button"
+                onClick={() => setFilter(tech)}
+                className="relative px-3.5 py-1.5 text-xs font-semibold rounded-xl transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="active-project-filter"
+                    className="absolute inset-0 rounded-xl bg-background shadow-sm border border-border/60 z-0"
+                    transition={{ type: "spring", stiffness: 450, damping: 30 }}
+                  />
+                )}
+                <span className={cn("relative z-10", isActive ? "text-primary" : "text-muted-foreground hover:text-foreground")}>
+                  {tech === "all" ? "Tất cả" : tech}
+                </span>
+              </button>
+            )
+          })}
+        </div>
       </div>
 
+      {/* Projects Grid */}
       {loading ? (
         <div className="flex h-60 items-center justify-center">
-          <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          <Loader2 className="h-10 w-10 animate-spin text-primary" aria-hidden="true" />
         </div>
       ) : (
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <AnimatePresence mode="popLayout">
             {filteredProjects.map((project) => (
               <motion.div
                 key={project.id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ type: "spring", stiffness: 350, damping: 25 }}
               >
-                <Card className="flex flex-col h-full overflow-hidden group border-muted shadow-sm hover:shadow-xl transition-all duration-500 rounded-2xl">
-                  <div className="relative aspect-video overflow-hidden">
+                <Card className="group relative flex flex-col h-full overflow-hidden rounded-2xl border border-border/70 bg-gradient-to-b from-card to-card/60 shadow-sm hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+                  <div className="relative aspect-video overflow-hidden bg-muted">
                     <img
                       src={project.image_url}
                       alt={project.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      width="600"
+                      height="338"
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-4">
+                    <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-5">
                       {project.live_url && (
-                        <Button asChild variant="secondary" size="sm" className="rounded-full">
+                        <Button asChild size="sm" className="rounded-xl shadow-lg">
                           <a href={project.live_url} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="mr-2 h-4 w-4" /> Live Demo
+                            <ExternalLink className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" /> Live Demo
                           </a>
                         </Button>
                       )}
                     </div>
                   </div>
-                  <CardContent className="p-6 flex-grow flex flex-col">
-                    <div className="flex-grow">
-                      <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{project.title}</h3>
-                      <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-3">
+
+                  <CardContent className="p-6 flex-grow flex flex-col justify-between space-y-4">
+                    <div className="space-y-2">
+                      <h3 className="text-xl font-bold group-hover:text-primary transition-colors text-balance">
+                        {project.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground line-clamp-3 leading-relaxed text-pretty">
                         {project.description}
                       </p>
-                      <div className="mt-4 flex flex-wrap gap-2">
+                    </div>
+
+                    <div className="space-y-4 pt-2">
+                      <div className="flex flex-wrap gap-1.5">
                         {project.tech_stack?.slice(0, 3).map((tech) => (
-                          <Badge key={tech} variant="outline" className="bg-primary/5 border-primary/20 text-[10px] uppercase tracking-wider">
+                          <Badge key={tech} variant="secondary" className="rounded-lg text-[10px] font-medium bg-muted/60 text-muted-foreground border-0">
                             {tech}
                           </Badge>
                         ))}
                         {(project.tech_stack?.length > 3) && (
-                          <Badge variant="outline" className="bg-primary/5 border-primary/20 text-[10px]">
+                          <Badge variant="secondary" className="rounded-lg text-[10px] font-medium bg-muted/60 text-muted-foreground border-0">
                             +{project.tech_stack.length - 3}
                           </Badge>
                         )}
                       </div>
-                    </div>
-                    <div className="mt-6 pt-4 border-t flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        {project.github_url && (
-                          <a href={project.github_url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
-                            <Github className="h-5 w-5" />
-                          </a>
-                        )}
-                        {user && (
-                          <Link to={`/projects/${project.id}/edit`} className="text-muted-foreground hover:text-primary transition-colors">
-                            <Edit className="h-4 w-4" />
-                          </Link>
-                        )}
-                      </div>
-                      <Button variant="ghost" size="sm" asChild className="group/btn px-0 hover:bg-transparent">
-                        <Link to={`/projects/${project.id}`} className="gap-1 font-bold text-primary">
-                          Xem Case Study <ArrowRight className="h-4 w-4 transition-transform group-hover/btn:translate-x-1" />
+
+                      <div className="pt-3 border-t border-border/40 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {project.github_url && (
+                            <a 
+                              href={project.github_url} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              aria-label={`GitHub repo của ${project.title}`}
+                              className="text-muted-foreground hover:text-primary p-1 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              <Github className="h-4 w-4" aria-hidden="true" />
+                            </a>
+                          )}
+                          {user && (
+                            <Link 
+                              to={`/projects/${project.id}/edit`} 
+                              aria-label={`Chỉnh sửa ${project.title}`}
+                              className="text-muted-foreground hover:text-primary p-1 rounded-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            >
+                              <Edit className="h-4 w-4" aria-hidden="true" />
+                            </Link>
+                          )}
+                        </div>
+                        <Link 
+                          to={`/projects/${project.id}`} 
+                          className="text-xs font-bold text-primary hover:underline inline-flex items-center gap-1 group/link"
+                        >
+                          Case Study <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/link:translate-x-1" aria-hidden="true" />
                         </Link>
-                      </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
@@ -162,8 +209,8 @@ export default function Projects() {
       )}
 
       {!loading && filteredProjects.length === 0 && (
-        <div className="text-center py-24">
-          <p className="text-xl text-muted-foreground">Không tìm thấy dự án nào khớp với bộ lọc.</p>
+        <div className="text-center py-20 border border-dashed rounded-3xl border-border/60 bg-muted/10">
+          <p className="text-lg text-muted-foreground">Không tìm thấy dự án nào khớp với bộ lọc.</p>
         </div>
       )}
     </div>

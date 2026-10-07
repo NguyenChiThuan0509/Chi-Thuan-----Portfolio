@@ -131,6 +131,9 @@ export default function SnippetDetail() {
               <img 
                 src={snippet.image_url} 
                 alt={snippet.title}
+                width="800"
+                height="450"
+                fetchPriority="high"
                 className="object-cover w-full h-full"
               />
             </div>
@@ -146,7 +149,7 @@ export default function SnippetDetail() {
             <div className="space-y-4 pt-8">
               <div className="flex items-center justify-between">
                 <h3 className="flex items-center gap-2 font-semibold">
-                  <Terminal className="h-5 w-5 text-primary" />
+                  <Terminal className="h-5 w-5 text-primary" aria-hidden="true" />
                   Mã nguồn minh họa
                 </h3>
                 <Button 
@@ -155,7 +158,7 @@ export default function SnippetDetail() {
                   onClick={copyToClipboard}
                   className="gap-2"
                 >
-                  {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                  {copied ? <Check className="h-4 w-4 text-green-500" aria-hidden="true" /> : <Copy className="h-4 w-4" aria-hidden="true" />}
                   {copied ? "Đã chép" : "Sao chép"}
                 </Button>
               </div>

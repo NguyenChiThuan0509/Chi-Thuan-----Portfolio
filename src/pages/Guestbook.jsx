@@ -174,30 +174,33 @@ export default function Guestbook() {
             {!isExpanded ? (
               <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10 shrink-0">
-                  <AvatarImage src={profile?.avatar_url || "/anh_dai_dien.png"} />
-                  <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                  <AvatarImage src={profile?.avatar_url || "/anh_dai_dien.png"} alt="Avatar" />
+                  <AvatarFallback><User className="h-5 w-5" aria-hidden="true" /></AvatarFallback>
                 </Avatar>
-                <div 
-                  className="flex-1 bg-muted/50 hover:bg-muted transition-colors rounded-full px-4 py-2 cursor-pointer text-muted-foreground text-sm"
+                <button 
+                  type="button"
+                  className="flex-1 text-left bg-muted/50 hover:bg-muted transition-colors rounded-full px-4 py-2 cursor-pointer text-muted-foreground text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                   onClick={() => setIsExpanded(true)}
+                  aria-label={i18n.language === 'vi' ? "Mở khung viết lời nhắn" : "Open message editor"}
                 >
-                  {user ? (profile?.name ? `${profile.name.split(' ').pop()} ơi, hãy để lại lời nhắn...` : "Hãy để lại lời nhắn...") : "Hãy để lại lời nhắn..."}
-                </div>
+                  {user ? (profile?.name ? `${profile.name.split(' ').pop()} ơi, hãy để lại lời nhắn…` : "Hãy để lại lời nhắn…") : "Hãy để lại lời nhắn…"}
+                </button>
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   className="h-9 w-9 text-primary hover:bg-primary/10"
                   onClick={() => setIsExpanded(true)}
+                  aria-label={i18n.language === 'vi' ? "Mở khung viết lời nhắn" : "Open message input"}
                 >
-                  <Send className="h-5 w-5" />
+                  <Send className="h-5 w-5" aria-hidden="true" />
                 </Button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center gap-3 mb-2">
                   <Avatar className="h-8 w-8 shrink-0">
-                    <AvatarImage src={profile?.avatar_url || "/anh_dai_dien.png"} />
-                    <AvatarFallback><User className="h-4 w-4" /></AvatarFallback>
+                    <AvatarImage src={profile?.avatar_url || "/anh_dai_dien.png"} alt="Avatar" />
+                    <AvatarFallback><User className="h-4 w-4" aria-hidden="true" /></AvatarFallback>
                   </Avatar>
                   <span className="text-sm font-semibold">
                     {user ? (profile?.name || user.email) : (i18n.language === 'vi' ? "Khách ẩn danh" : "Guest")}
@@ -207,11 +210,14 @@ export default function Guestbook() {
                 {!user && (
                   <div className="space-y-1.5">
                     <Input 
+                      name="name"
+                      autoComplete="name"
                       placeholder={i18n.language === 'vi' ? "Tên của bạn" : "Your Name"}
+                      aria-label={i18n.language === 'vi' ? "Tên của bạn" : "Your Name"}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
-                      className="bg-transparent border-none focus-visible:ring-0 px-1 text-base font-medium"
+                      className="bg-transparent border border-input focus-visible:ring-2 focus-visible:ring-ring px-3 py-1.5 text-base font-medium rounded-md"
                       autoFocus
                     />
                   </div>
@@ -219,11 +225,13 @@ export default function Guestbook() {
                 
                 <div className="space-y-1.5">
                   <Textarea 
-                    placeholder={i18n.language === 'vi' ? "Viết gì đó thú vị..." : "Write something interesting..."}
+                    name="content"
+                    placeholder={i18n.language === 'vi' ? "Viết gì đó thú vị…" : "Write something interesting…"}
+                    aria-label={i18n.language === 'vi' ? "Nội dung lời nhắn" : "Message content"}
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                     required
-                    className="min-h-[120px] bg-transparent border-none focus-visible:ring-0 px-1 py-2 text-lg resize-none"
+                    className="min-h-[120px] bg-transparent border border-input focus-visible:ring-2 focus-visible:ring-ring px-3 py-2 text-base resize-none rounded-md"
                     autoFocus={!!user}
                   />
                 </div>
@@ -238,7 +246,7 @@ export default function Guestbook() {
                     className="rounded-md px-8 py-2 bg-primary text-primary-foreground font-semibold"
                     disabled={submitting}
                   >
-                    {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Send className="h-4 w-4 mr-2" />}
+                    {submitting ? <Loader2 className="h-4 w-4 animate-spin mr-2" aria-hidden="true" /> : <Send className="h-4 w-4 mr-2" aria-hidden="true" />}
                     {i18n.language === 'vi' ? "Gửi lời nhắn" : "Send Message"}
                   </Button>
                 </div>
@@ -249,7 +257,7 @@ export default function Guestbook() {
 
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold tracking-tight">
+            <h2 className="text-2xl font-bold tracking-tight text-balance">
               {i18n.language === 'vi' ? "Tất cả lời nhắn" : "All Messages"}
               <span className="ml-3 text-sm font-normal text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
                 {messages.length}
@@ -272,24 +280,25 @@ export default function Guestbook() {
                     <CardContent className="p-6">
                       <div className="flex items-start gap-4">
                         <Avatar className="h-10 w-10 border border-primary/10">
-                          <AvatarImage src={msg.avatar_url || "/anh_dai_dien.png"} />
-                          <AvatarFallback><User className="h-5 w-5" /></AvatarFallback>
+                          <AvatarImage src={msg.avatar_url || "/anh_dai_dien.png"} alt={msg.name || "User"} />
+                          <AvatarFallback><User className="h-5 w-5" aria-hidden="true" /></AvatarFallback>
                         </Avatar>
                         <div className="flex-1 space-y-1">
                           <div className="flex items-center justify-between">
                             <h4 className="font-bold text-primary">{msg.name}</h4>
                             <div className="flex items-center gap-3">
                               <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
+                                <Clock className="h-3 w-3" aria-hidden="true" />
                                 {formatDistanceToNow(new Date(msg.created_at), { addSuffix: true, locale })}
                               </span>
                               {user?.id === msg.user_id && (
                                 <button 
                                   onClick={() => handleDelete(msg.id)}
-                                  className="text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
-                                  title="Delete message"
+                                  className="text-muted-foreground hover:text-destructive transition-colors opacity-0 group-hover:opacity-100 p-1 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                  aria-label={i18n.language === 'vi' ? "Xóa lời nhắn" : "Delete message"}
+                                  title={i18n.language === 'vi' ? "Xóa lời nhắn" : "Delete message"}
                                 >
-                                  <Trash2 className="h-4 w-4" />
+                                  <Trash2 className="h-4 w-4" aria-hidden="true" />
                                 </button>
                               )}
                             </div>

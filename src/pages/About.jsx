@@ -10,15 +10,15 @@ const timeline = [
   {
     title: "Nhân viên chính thức - bộ phận Technical - team Frontend ",
     organization: "365 EJSC",
-    period: "01/04/2026 - Hiện tại",
-    description: "Làm việc với React, TailwindCSS và tham gia các dự án thực tế.",
+    period: "01/04/2026 - 30/09/2026",
+    description: "Làm việc với React và tham gia các dự án thực tế.",
     icon: Briefcase,
   },
   {
     title: "Thực tập sinh Frontend Developer",
     organization: "365 EJSC",
     period: "01/01/2026 - 31/03/2026",
-    description: "Làm việc với React, TailwindCSS và tham gia các dự án thực tế.",
+    description: "Làm việc với React và tham gia các dự án thực tế.",
     icon: Briefcase,
   },
   {

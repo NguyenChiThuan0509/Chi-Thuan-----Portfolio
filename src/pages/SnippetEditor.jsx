@@ -183,12 +183,18 @@ export default function SnippetEditor() {
                     id="image"
                     value={snippet.image_url}
                     onChange={(e) => setSnippet({ ...snippet, image_url: e.target.value })}
-                    placeholder="URL ảnh hoặc upload..."
+                    placeholder="URL ảnh hoặc upload…"
                     className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   />
                   <input type="file" id="file-upload" className="hidden" accept="image/*" onChange={handleFileUpload} />
-                  <Button type="button" variant="outline" size="icon" onClick={() => document.getElementById('file-upload').click()}>
-                    <Upload className="h-4 w-4" />
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={() => document.getElementById('file-upload').click()}
+                    aria-label="Tải ảnh minh họa lên"
+                  >
+                    <Upload className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </div>
               </div>
@@ -200,7 +206,7 @@ export default function SnippetEditor() {
                 id="description"
                 value={snippet.description}
                 onChange={(e) => setSnippet({ ...snippet, description: e.target.value })}
-                placeholder="Mô tả tóm tắt về nội dung này..."
+                placeholder="Mô tả tóm tắt về nội dung này…"
                 className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                 rows={2}
               />
@@ -208,13 +214,13 @@ export default function SnippetEditor() {
 
             <div className="grid gap-2">
               <Label htmlFor="code" className="flex items-center gap-2">
-                <Code2 className="h-4 w-4" /> Đoạn code (nếu có)
+                <Code2 className="h-4 w-4" aria-hidden="true" /> Đoạn code (nếu có)
               </Label>
               <Textarea
                 id="code"
                 value={snippet.code_snippet}
                 onChange={(e) => setSnippet({ ...snippet, code_snippet: e.target.value })}
-                placeholder="Dán đoạn code vào đây..."
+                placeholder="Dán đoạn code vào đây…"
                 className="font-mono text-sm bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                 rows={6}
               />
@@ -222,13 +228,13 @@ export default function SnippetEditor() {
 
             <div className="grid gap-2">
               <Label htmlFor="content" className="flex items-center gap-2">
-                <Type className="h-4 w-4" /> Nội dung chi tiết
+                <Type className="h-4 w-4" aria-hidden="true" /> Nội dung chi tiết
               </Label>
               <Textarea
                 id="content"
                 value={snippet.content}
                 onChange={(e) => setSnippet({ ...snippet, content: e.target.value })}
-                placeholder="Viết nội dung bài viết ở đây..."
+                placeholder="Viết nội dung bài viết ở đây…"
                 className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                 rows={10}
               />

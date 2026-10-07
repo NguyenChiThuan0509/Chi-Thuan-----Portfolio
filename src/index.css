@@ -51,25 +51,25 @@
   }
 
   .dark {
-    --background: 216 28% 7%;
-    --foreground: 210 15% 82%;
-    --card: 215 21% 11%;
-    --card-foreground: 210 15% 82%;
-    --popover: 216 28% 7%;
-    --popover-foreground: 210 15% 82%;
-    --primary: 216 85% 52%;
-    --primary-foreground: 210 15% 95%;
-    --secondary: 210 11% 15%;
-    --secondary-foreground: 210 15% 82%;
-    --muted: 210 11% 15%;
-    --muted-foreground: 210 5% 65%;
-    --accent: 216 85% 15%;
-    --accent-foreground: 216 85% 85%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 6.5%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 12%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 5% 12%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 240 5% 15%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 15% 95%;
-    --border: 210 11% 21%;
-    --input: 210 11% 21%;
-    --ring: 216 85% 52%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5% 17%;
+    --input: 240 5% 17%;
+    --ring: 217 91% 60%;
   }
 }
 
@@ -78,28 +78,44 @@
     border-color: hsl(var(--border));
   }
   body {
-    @apply bg-background text-foreground overflow-x-hidden selection:bg-primary/30 selection:text-foreground;
+    @apply bg-background text-foreground overflow-x-hidden selection:bg-primary/30 selection:text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight font-bold text-foreground;
+    @apply tracking-tight font-bold text-foreground text-balance;
   }
 }
 
 @layer components {
   .neon-text {
-    @apply text-primary drop-shadow-[0_0_8px_rgba(31,111,235,0.4)];
+    @apply text-primary drop-shadow-[0_0_12px_rgba(59,130,246,0.35)];
   }
   
   .neon-border {
-    @apply border-primary/40 shadow-[0_0_15px_rgba(31,111,235,0.1)];
+    @apply border-primary/40 shadow-[0_0_20px_rgba(59,130,246,0.1)];
   }
 
   .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border shadow-md;
+    @apply bg-card/75 backdrop-blur-xl border border-border/80 shadow-sm transition-all;
   }
 
-  .btn-neon {
-    @apply bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-md transition-all duration-300 active:scale-95 font-semibold rounded-md px-6 py-2;
+  .bento-card {
+    @apply relative overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-b from-card to-card/60 p-6 shadow-sm transition-all duration-300 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5;
+  }
+
+  .bg-dot-pattern {
+    background-image: radial-gradient(rgba(120, 120, 120, 0.15) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .bg-grid-pattern {
+    background-image: linear-gradient(to right, rgba(120, 120, 120, 0.07) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(120, 120, 120, 0.07) 1px, transparent 1px);
+    background-size: 32px 32px;
+  }
+
+  .btn-craft {
+    @apply relative inline-flex items-center justify-center rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-sm transition-all duration-200 hover:bg-primary/90 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
   }
 }
 

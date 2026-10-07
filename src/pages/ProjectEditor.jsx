@@ -168,7 +168,7 @@ export default function ProjectEditor() {
                 id="description"
                 value={project.description}
                 onChange={(e) => setProject({ ...project, description: e.target.value })}
-                placeholder="Mô tả tóm tắt về dự án..."
+                placeholder="Mô tả tóm tắt về dự án…"
                 className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                 rows={3}
                 required
@@ -183,12 +183,18 @@ export default function ProjectEditor() {
                     id="image"
                     value={project.image_url}
                     onChange={(e) => setProject({ ...project, image_url: e.target.value })}
-                    placeholder="URL ảnh hoặc upload..."
+                    placeholder="URL ảnh hoặc upload…"
                     className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
                   />
                   <input type="file" id="project-upload" className="hidden" accept="image/*" onChange={handleFileUpload} />
-                  <Button type="button" variant="outline" size="icon" onClick={() => document.getElementById('project-upload').click()}>
-                    <Upload className="h-4 w-4" />
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="icon" 
+                    onClick={() => document.getElementById('project-upload').click()}
+                    aria-label="Tải ảnh lên / Upload image"
+                  >
+                    <Upload className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 </div>
               </div>
@@ -199,7 +205,7 @@ export default function ProjectEditor() {
                   value={project.tech_stack}
                   onChange={(e) => setProject({ ...project, tech_stack: e.target.value })}
                   className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
-                  placeholder="React, TailwindCSS, Supabase..."
+                  placeholder="React, TailwindCSS, Supabase…"
                 />
               </div>
             </div>
@@ -269,7 +275,7 @@ export default function ProjectEditor() {
                   value={project.result}
                   onChange={(e) => setProject({ ...project, result: e.target.value })}
                   className="bg-background/50 border-border focus-visible:ring-primary/20 px-3 py-2"
-                  placeholder="Kết quả cuối cùng và bài học rút ra..."
+                  placeholder="Kết quả cuối cùng và bài học rút ra…"
                   rows={4}
                 />
               </div>

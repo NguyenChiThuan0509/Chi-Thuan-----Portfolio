@@ -91,9 +91,10 @@ export default function Snippets() {
 
       <div className="flex flex-col md:flex-row gap-4 mb-8">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" aria-hidden="true" />
           <Input 
-            placeholder="Tìm kiếm kiến thức..." 
+            placeholder="Tìm kiếm kiến thức…" 
+            aria-label="Tìm kiếm kiến thức"
             className="pl-10"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -110,7 +111,7 @@ export default function Snippets() {
                 className="gap-2 whitespace-nowrap"
                 onClick={() => setCategory(cat.id)}
               >
-                <Icon className="h-4 w-4" />
+                <Icon className="h-4 w-4" aria-hidden="true" />
                 {cat.label}
               </Button>
             )
@@ -120,7 +121,7 @@ export default function Snippets() {
 
       {loading ? (
         <div className="flex h-40 items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <Loader2 className="h-8 w-8 animate-spin text-primary" aria-hidden="true" />
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -140,6 +141,9 @@ export default function Snippets() {
                       <img 
                         src={snippet.image_url} 
                         alt={snippet.title}
+                        width="600"
+                        height="300"
+                        loading="lazy"
                         className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
                       />
                       <div className="absolute top-3 left-3">

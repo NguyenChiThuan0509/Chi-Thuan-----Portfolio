@@ -132,14 +132,15 @@ export default function Navbar() {
                 <button
                   onMouseEnter={() => setHoveredPath("more")}
                   className={cn(
-                    "relative flex items-center gap-1 px-4 py-1.5 text-sm font-medium transition-colors duration-300 outline-none",
+                    "relative flex items-center gap-1 px-4 py-1.5 text-sm font-medium transition-colors duration-300 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
                     secondaryNav.some(item => location.pathname === item.href) 
                       ? "text-primary" 
                       : "text-muted-foreground hover:text-primary"
                   )}
+                  aria-label={i18n.language === 'vi' ? "Mục khác" : "More options"}
                 >
                   <span className="relative z-10">{i18n.language === 'vi' ? 'Thêm' : 'More'}</span>
-                  <ChevronDown className="h-4 w-4 relative z-10" />
+                  <ChevronDown className="h-4 w-4 relative z-10" aria-hidden="true" />
                   {secondaryNav.some(item => location.pathname === item.href) && (
                     <motion.div
                       layoutId="nav-active"
@@ -168,7 +169,7 @@ export default function Navbar() {
                           location.pathname === item.href ? "text-primary bg-primary/5" : ""
                         )}
                       >
-                        <Icon className="h-4 w-4" />
+                        <Icon className="h-4 w-4" aria-hidden="true" />
                         <span>{item.name}</span>
                       </Link>
                     </DropdownMenuItem>
@@ -184,6 +185,7 @@ export default function Navbar() {
               size="icon" 
               onClick={toggleLanguage}
               className="h-9 w-9 rounded-full transition-transform active:scale-95"
+              aria-label={i18n.language === 'vi' ? "Switch to English" : "Chuyển sang Tiếng Việt"}
               title={i18n.language === 'vi' ? "Switch to English" : "Chuyển sang Tiếng Việt"}
             >
               <span className="text-[10px] font-bold uppercase">{i18n.language}</span>
@@ -193,9 +195,13 @@ export default function Navbar() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-9 w-9 rounded-full ring-offset-background transition-all hover:ring-2 hover:ring-primary/20 p-0">
+                  <Button 
+                    variant="ghost" 
+                    className="relative h-9 w-9 rounded-full ring-offset-background transition-all hover:ring-2 hover:ring-primary/20 p-0"
+                    aria-label="Menu tài khoản"
+                  >
                     <Avatar className="h-9 w-9 border-2 border-background shadow-sm">
-                      <AvatarImage src={profile?.avatar_url || "/anh_dai_dien.png"} alt={profile?.name || "User"} />
+                      <AvatarImage src={profile?.avatar_url || "/anh_dai_dien.png"} alt={profile?.name || "User avatar"} />
                       <AvatarFallback>{profile?.name?.charAt(0) || "U"}</AvatarFallback>
                     </Avatar>
                   </Button>
@@ -238,12 +244,18 @@ export default function Navbar() {
             size="icon" 
             onClick={toggleLanguage}
             className="h-9 w-9"
+            aria-label={i18n.language === 'vi' ? "Switch to English" : "Chuyển sang Tiếng Việt"}
           >
             <span className="text-[10px] font-bold uppercase">{i18n.language}</span>
           </Button>
           <ThemeToggle />
-          <Button variant="ghost" size="icon" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label={isOpen ? "Đóng menu / Close menu" : "Mở menu / Open menu"}
+          >
+            {isOpen ? <X className="h-5 w-5" aria-hidden="true" /> : <Menu className="h-5 w-5" aria-hidden="true" />}
           </Button>
         </div>
       </div>

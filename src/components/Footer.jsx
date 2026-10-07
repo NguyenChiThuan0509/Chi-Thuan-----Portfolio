@@ -10,23 +10,26 @@ export default function Footer() {
             href={profileData.github}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-primary transition-colors"
+            aria-label="GitHub Profile"
+            className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md p-1"
           >
-            <Github className="h-5 w-5" />
+            <Github className="h-5 w-5" aria-hidden="true" />
           </a>
           <a
             href={profileData.linkedin}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-primary transition-colors"
+            aria-label="LinkedIn Profile"
+            className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md p-1"
           >
-            <Linkedin className="h-5 w-5" />
+            <Linkedin className="h-5 w-5" aria-hidden="true" />
           </a>
           <a
             href={`mailto:${profileData.email}`}
-            className="text-muted-foreground hover:text-primary transition-colors"
+            aria-label="Email Contact"
+            className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md p-1"
           >
-            <Mail className="h-5 w-5" />
+            <Mail className="h-5 w-5" aria-hidden="true" />
           </a>
         </div>
         <p className="text-sm text-muted-foreground">

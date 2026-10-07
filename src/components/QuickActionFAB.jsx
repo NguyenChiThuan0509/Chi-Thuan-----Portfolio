@@ -64,6 +64,7 @@ export default function QuickActionFAB() {
                     action.color
                   )}
                   onClick={action.onClick}
+                  aria-label={action.label}
                 >
                   {action.icon}
                 </Button>
@@ -76,12 +77,13 @@ export default function QuickActionFAB() {
       <Button
         size="icon"
         onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? "Đóng menu thao tác nhanh" : "Mở menu thao tác nhanh"}
         className={cn(
           "h-14 w-14 rounded-full shadow-2xl transition-all duration-300",
           isOpen ? "bg-destructive rotate-45" : "bg-primary"
         )}
       >
-        <Plus className="h-6 w-6" />
+        <Plus className="h-6 w-6" aria-hidden="true" />
       </Button>
     </div>
   )
